@@ -1,0 +1,9 @@
+# Python
+venv/
+__pycache__/
+
+# Credentials
+api_token.py
+
+# Debugging logs
+*.log
