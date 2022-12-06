@@ -5,16 +5,17 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
                      level=logging.INFO)
 
 import asyncio
-import telegram
+from telegram import Update
+from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, ContextTypes, filters
 
 from api_token import TOKEN
 
-async def main():
-    bot = telegram.Bot(TOKEN)
-    async with bot:
-        pass
+async def start(update, context):
+    await update.message.reply_text("Hello, World!")
 
 
-if __name__ == '__main__':
-    asyncio.run(main())
+app = ApplicationBuilder().token(TOKEN).build()
+app.add_handler(CommandHandler("start", start))
+# app.add_handler(MessageHandler(filters.Regex(r"(?i)crypto"), main))
+app.run_polling()
 
