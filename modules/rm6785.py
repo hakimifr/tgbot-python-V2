@@ -32,7 +32,9 @@ RM6785_UPDATE_STICKER: str = "CAACAgUAAxkBAAED_CFiFIVi0Z1YX3MOK9xnaylscRhWbQACNw
 RM6785_MASTER_USER: list = [1024853832, 1138003186]  # Hakimi, Samar
 
 
-# TODO: auth_users and reload_users() must die. Use more classes for storing data.
+# TODO: auth_users must die. Use more classes for storing data.
+if config.config.get("authorized_users") is None:
+    config.config["authorized_users"] = []
 auth_users: list = config.config["authorized_users"]
 
 
