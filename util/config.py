@@ -15,6 +15,10 @@ class Config:
         if Path(self.file).exists() and Path(self.file).is_file():
             log.info(f"Auto-loading config from {self.file} since it exists")
             self.read_config()
+        else:
+            # Create the file to avoid traceback during read_config() call
+            with open(self.file, "w")as config:
+                config.write("{}")
 
         # Make sure changes are written upon exit
         atexit.register(self.on_exit)
