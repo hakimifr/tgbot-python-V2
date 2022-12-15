@@ -1,5 +1,9 @@
 """
 Module to send message with help strings when requested.
+Available methods:
+
+    bot_help(update, context):
+        Sends help message.
 """
 import logging
 from util.help import Help

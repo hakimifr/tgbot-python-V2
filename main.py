@@ -6,6 +6,7 @@ from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, ContextTypes, filters
 from api_token import TOKEN
 
+import modules.help
 import modules.rm6785
 # TODO: Implement these modules (ref: github.com/Hakimi0804/tgbot-fish)
 # import modules.spam_protect     # Prevent spammers in groups
@@ -22,6 +23,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 Help.register_help("start", "Show bot's about.")
 app = ApplicationBuilder().token(TOKEN).build()
 app.add_handler(CommandHandler("start", start))
+app.add_handler(CommandHandler("help", modules.help.bot_help))
 app.add_handler(CommandHandler("approve", modules.rm6785.approve))
 app.add_handler(CommandHandler("disapprove", modules.rm6785.disapprove))
 app.add_handler(CommandHandler("post", modules.rm6785.post))

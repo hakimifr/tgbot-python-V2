@@ -16,6 +16,7 @@ Available methods:
 """
 
 import logging
+from util.help import Help
 from util.config import Config
 from telegram import Update
 from telegram.ext import ContextTypes
@@ -141,3 +142,11 @@ async def deauthorize(update: Update, context: ContextTypes.DEFAULT_TYPE):
     auth_users.remove(update.message.reply_to_message.from_user.id)
     config.write_config()
     config.read_config()
+
+
+Help.register_help("approve, .+1", "Approve a message to be posted.")
+Help.register_help("disapprove, .-1", "Disapprove a message to be posted.")
+Help.register_help("post", "Post replied message to @RM6785.")
+Help.register_help("sticker", "Send RM6785 sticker to @RM6785.")
+Help.register_help("authorize", "Authorize a user for using RM6785 fetures.")
+Help.register_help("deauthorize", "Deauthorize a user from using RM6785 fetures.")
