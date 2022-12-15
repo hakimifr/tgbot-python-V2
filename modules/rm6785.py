@@ -62,7 +62,7 @@ def check(count_init=False, reply_init=False):
 
                 if count_init:
                     try:
-                        count = config.config[update.message.reply_to_message.message_id]
+                        count = config.config[str(update.message.reply_to_message.message_id)]
                     except KeyError:
                         pass
 
@@ -77,7 +77,7 @@ def check(count_init=False, reply_init=False):
 async def approve(update: Update, context: ContextTypes.DEFAULT_TYPE, count):
     if count < 2:
         count += 1
-        config.config[update.message.reply_to_message.message_id] = count
+        config.config[str(update.message.reply_to_message.message_id)] = count
         config.write_config()
         await update.message.reply_text(f"Approved. count: {count}")
     else:
@@ -87,7 +87,7 @@ async def approve(update: Update, context: ContextTypes.DEFAULT_TYPE, count):
 @check(reply_init=True, count_init=True)
 async def disapprove(update: Update, context: ContextTypes.DEFAULT_TYPE, count):
     count -= 1
-    config.config[update.message.reply_to_message.message_id] = count
+    config.config[str(update.message.reply_to_message.message_id)] = count
     config.write_config()
     await update.message.reply_text(f"Disapproved. count: {count}")
 
@@ -103,7 +103,7 @@ async def post(update: Update, context: ContextTypes.DEFAULT_TYPE, count):
     result = await update.message.reply_to_message.copy(RM6785_CHAT_ID)
     await result.get_bot().pin_chat_message(RM6785_CHAT_ID, result.message_id)
 
-    del config.config[update.message.reply_to_message.message_id]
+    del config.config[str(update.message.reply_to_message.message_id)]
 
 
 @check()
