@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 
 import logging
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
+
+
 from util.help import Help
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, ContextTypes, filters
@@ -13,7 +16,6 @@ import modules.rm6785
 # import modules.moderation       # /ban, /kick, etc
 # import modules.komaru           # Pranaya's komaru GIFs channel management
 # import modules.toys             # Useless stuffs for fun, e.g. /shuf, etc
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
