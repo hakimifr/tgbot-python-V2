@@ -13,6 +13,12 @@ Available methods:
 
     sticker(update, context)
         Post RM6785's update sticker to channel.
+
+    authorize(update, cotext)
+        Allow a user to use the module functions.
+
+    deauthorize(update, context)
+        Disallow a user from using the module functions.
 """
 
 import logging
