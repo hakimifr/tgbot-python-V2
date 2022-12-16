@@ -19,6 +19,9 @@ Available methods:
 
     deauthorize(update, context)
         Disallow a user from using the module functions.
+
+    listauth(update, context)
+        List authorized users.
 """
 
 import logging
@@ -150,9 +153,17 @@ async def deauthorize(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(f"User {update.message.reply_to_message.from_user.first_name} is now deauthorized.")
 
 
+async def listauth(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    config.read_config()
+    await update.message\
+        .reply_text("Master users (these users are permanent):\n" + str(user + "\n" for user in RM6785_MASTER_USER) +
+                    "Authorized users:\n" + str(user + "\n" for user in config.config["authorized_users"]))
+
+
 Help.register_help("approve, .+1", "Approve a message to be posted.")
 Help.register_help("disapprove, .-1", "Disapprove a message to be posted.")
 Help.register_help("post", "Post replied message to @RM6785.")
 Help.register_help("sticker", "Send RM6785 sticker to @RM6785.")
 Help.register_help("authorize", "Authorize a user for using RM6785 fetures.")
 Help.register_help("deauthorize", "Deauthorize a user from using RM6785 fetures.")
+Help.register_help("listauth", "List authorized users for RM6785 features.")
