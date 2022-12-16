@@ -33,10 +33,8 @@ RM6785_UPDATE_STICKER: str = "CAACAgUAAxkBAAED_CFiFIVi0Z1YX3MOK9xnaylscRhWbQACNw
 RM6785_MASTER_USER: list = [1024853832, 1138003186]  # Hakimi, Samar
 
 
-# TODO: auth_users must die. Use more classes for storing data.
 if config.config.get("authorized_users") is None:
     config.config["authorized_users"] = []
-auth_users: list = config.config["authorized_users"]
 
 
 # Decorator hell indeed
@@ -51,7 +49,7 @@ def check(count_init=False, reply_init=False):
 
             # Prevent command from being used by unauthorized users
             config.read_config()
-            if update.message.from_user.id not in auth_users + RM6785_MASTER_USER:
+            if update.message.from_user.id not in config.config["authorized_users"] + RM6785_MASTER_USER:
                 await update.message.reply_text("You are not authorized to use this command.")
                 return
 
@@ -120,13 +118,14 @@ async def authorize(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("You are not allowed to use this command.")
         return
 
-    if update.message.reply_to_message.from_user.id in auth_users:
+    if update.message.reply_to_message.from_user.id in config.config["authorized_users"]:
         await update.message.reply_text("User is already authorized")
         return
 
-    auth_users.append(update.message.reply_to_message.from_user.id)
+    config.config["authorized_users"].append(update.message.reply_to_message.from_user.id)
     config.write_config()
     config.read_config()
+    await update.message.reply_text(f"User {update.message.reply_to_message.from_user.first_name} is now authorized.")
 
 
 @check(reply_init=True)
@@ -135,13 +134,14 @@ async def deauthorize(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("You are not allowed to use this command.")
         return
 
-    if update.message.reply_to_message.from_user.id not in auth_users:
+    if update.message.reply_to_message.from_user.id not in config.config["authorized_users"]:
         await update.message.reply_text("That user was never authorized")
         return
 
-    auth_users.remove(update.message.reply_to_message.from_user.id)
+    config.config["authorized_users"].remove(update.message.reply_to_message.from_user.id)
     config.write_config()
     config.read_config()
+    await update.message.reply_text(f"User {update.message.reply_to_message.from_user.first_name} is now deauthorized.")
 
 
 Help.register_help("approve, .+1", "Approve a message to be posted.")
