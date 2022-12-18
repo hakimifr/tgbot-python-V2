@@ -155,9 +155,16 @@ async def deauthorize(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def listauth(update: Update, context: ContextTypes.DEFAULT_TYPE):
     config.read_config()
-    await update.message\
-        .reply_text("Master users (these users are permanent):\n" + str(user + "\n" for user in RM6785_MASTER_USER) +
-                    "Authorized users:\n" + str(user + "\n" for user in config.config["authorized_users"]))
+    text = "Master users \(these users are hardcoded in the codebase\):\n"  # noqa: W605
+    for userid in RM6785_MASTER_USER:
+        text += f"[this dude](tg://user?id={userid}) \({userid}\)\n"  # noqa: W605
+    text += "\n"
+
+    text += "Manually authorized users:\n"
+    for userid in config.config["authorized_users"]:
+        text += f"[this dude](tg://user?id={userid}) \({userid}\)\n"  # noqa: W605
+
+    await update.message.reply_text(text, parse_mode="MarkdownV2")
 
 
 Help.register_help("approve, .+1", "Approve a message to be posted.")
