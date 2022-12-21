@@ -2,15 +2,11 @@
 
 import logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
-import sys
-import subprocess
 
-
-from util.help import Help
-from telegram import Update
-from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, ContextTypes, filters
+from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters
 from api_token import TOKEN
 
+import modules.core
 import modules.help
 import modules.rm6785
 import modules.toys
@@ -20,21 +16,9 @@ import modules.toys
 # import modules.komaru           # Pranaya's komaru GIFs channel management
 # import modules.toys             # Useless stuffs for fun, e.g. /shuf, etc
 
-
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    await update.message.reply_text("A bot written in Python3, by @Hakimi0804.")
-
-
-async def neofetch(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    output = subprocess.check_output(["neofetch", "--stdout"] + context.args)
-    await update.message.reply_text(output.decode(sys.stdout.encoding))
-
-
-Help.register_help("start", "Show bot's about.")
-Help.register_help("neofetch", "Run neofetch")
 app = ApplicationBuilder().token(TOKEN).build()
-app.add_handler(CommandHandler("start", start))
-app.add_handler(CommandHandler("neofetch", neofetch))
+app.add_handler(CommandHandler("start", modules.core.start))
+app.add_handler(CommandHandler("neofetch", modules.core.neofetch))
 app.add_handler(CommandHandler("help", modules.help.bot_help))
 app.add_handler(CommandHandler("approve", modules.rm6785.approve))
 app.add_handler(CommandHandler("disapprove", modules.rm6785.disapprove))
