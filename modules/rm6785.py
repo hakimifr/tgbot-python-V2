@@ -167,8 +167,8 @@ async def listauth(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(text, parse_mode="MarkdownV2")
 
 
-Help.register_help("approve, .+1", "Approve a message to be posted.")
-Help.register_help("disapprove, .-1", "Disapprove a message to be posted.")
+Help.register_help("approve", "Approve a message to be posted.")
+Help.register_help("disapprove", "Disapprove a message to be posted.")
 Help.register_help("post", "Post replied message to @RM6785.")
 Help.register_help("sticker", "Send RM6785 sticker to @RM6785.")
 Help.register_help("authorize", "Authorize a user for using RM6785 fetures.")

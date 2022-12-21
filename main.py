@@ -5,11 +5,17 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters
 from api_token import TOKEN
+from util.help import Help
 
 import modules.core
 import modules.help
 import modules.rm6785
 import modules.toys
+
+# After these modules registers their help, we can update telegram commands and description.
+if Help.cmd_update_pending:
+    Help.update_bot_cmd()
+
 # TODO: Implement these modules (ref: github.com/Hakimi0804/tgbot-fish)
 # import modules.spam_protect     # Prevent spammers in groups
 # import modules.moderation       # /ban, /kick, etc
