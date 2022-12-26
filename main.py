@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import logging
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
+logging.basicConfig(format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO)
 
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters
 from api_token import TOKEN
@@ -23,6 +23,7 @@ if Help.cmd_update_pending:
 # import modules.toys             # Useless stuffs for fun, e.g. /shuf, etc
 
 app = ApplicationBuilder().token(TOKEN).build()
+
 app.add_handler(CommandHandler("start", modules.core.start))
 app.add_handler(CommandHandler("neofetch", modules.core.neofetch))
 app.add_handler(CommandHandler("save", modules.core.save))
@@ -37,11 +38,18 @@ app.add_handler(CommandHandler("listauth", modules.rm6785.listauth))
 app.add_handler(CommandHandler("gay", modules.toys.random_percentage))
 app.add_handler(CommandHandler("sexy", modules.toys.random_percentage))
 app.add_handler(CommandHandler("shuffle", modules.toys.shuffle))
+
+# Added by Pratham :sunglasses:
+app.add_handler(CommandHandler("insert", modules.toys.insert))
+app.add_handler(CommandHandler("add_words", modules.toys.add_words))
+app.add_handler(CommandHandler("remove_words", modules.toys.remove_words))
+app.add_handler(CommandHandler("reset_words", modules.toys.reset_words))
+
 app.add_handler(MessageHandler(filters.Regex(r"\.\+1"), modules.rm6785.approve))
 app.add_handler(MessageHandler(filters.Regex(r"\.-1"), modules.rm6785.disapprove))
 app.add_handler(MessageHandler(filters.Regex(r"(?i)\.post"), modules.rm6785.post))
 app.add_handler(MessageHandler(filters.Regex(r"(?i)\.sticker"), modules.rm6785.sticker))
 app.add_handler(MessageHandler(filters.Regex(r"(?i)\.auth"), modules.rm6785.authorize))
 app.add_handler(MessageHandler(filters.Regex(r"(?i)\.deauth"), modules.rm6785.deauthorize))
-# app.add_handler(MessageHandler(filters.Regex(r"(?i)crypto"), main))
+
 app.run_polling()
