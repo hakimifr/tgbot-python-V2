@@ -27,6 +27,7 @@ app = ApplicationBuilder().token(TOKEN).build()
 
 app.add_handler(CommandHandler("start", modules.core.start))
 app.add_handler(CommandHandler("neofetch", modules.misc.neofetch))
+app.add_handler(CommandHandler("magisk", modules.misc.magisk))
 app.add_handler(CommandHandler("save", modules.core.save))
 app.add_handler(CommandHandler("help", modules.help.bot_help))
 app.add_handler(CommandHandler("approve", modules.rm6785.approve))

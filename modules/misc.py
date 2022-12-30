@@ -1,4 +1,6 @@
 import sys
+import json
+import requests
 import subprocess
 from util.help import Help
 from telegram import Update
@@ -10,4 +12,16 @@ async def neofetch(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text(output.decode(sys.stdout.encoding))
 
 
+async def magisk(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    resp: requests.Response = requests.get("https://api.github.com/repos/topjohnwu/Magisk/releases/latest")
+    resp_obj: dict = json.loads(resp.text)
+    assets: dict = resp_obj.get("assets")[0]
+
+    dl_stable: str = assets.get("browser_download_url")
+    dl_canary: str = "https://raw.githubusercontent.com/topjohnwu/magisk-files/canary/app-debug.apk"
+
+    await update.message.reply_markdown_v2(f"[Latest stable]({dl_stable})\n[Latest canary]({dl_canary})")
+
+
+Help.register_help("magisk", "Get the links to latest magisk apks.")
 Help.register_help("neofetch", "Run neofetch")
