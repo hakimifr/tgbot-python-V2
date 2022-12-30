@@ -8,6 +8,7 @@ from api_token import TOKEN
 from util.help import Help
 
 import modules.core
+import modules.misc
 import modules.help
 import modules.rm6785
 import modules.toys
@@ -25,7 +26,7 @@ if Help.cmd_update_pending:
 app = ApplicationBuilder().token(TOKEN).build()
 
 app.add_handler(CommandHandler("start", modules.core.start))
-app.add_handler(CommandHandler("neofetch", modules.core.neofetch))
+app.add_handler(CommandHandler("neofetch", modules.misc.neofetch))
 app.add_handler(CommandHandler("save", modules.core.save))
 app.add_handler(CommandHandler("help", modules.help.bot_help))
 app.add_handler(CommandHandler("approve", modules.rm6785.approve))
