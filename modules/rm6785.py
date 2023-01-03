@@ -106,12 +106,13 @@ async def post(update: Update, context: ContextTypes.DEFAULT_TYPE, count):
         await update.message.reply_text("Not enough approval!")
         return
 
-    await update.message.reply_text("One moment...")
+    message = await update.message.reply_text("One moment...")
     await update.message.reply_to_message.copy(RM6785_CHANNEL_ID)
     result = await update.message.reply_to_message.copy(RM6785_CHAT_ID)
     await result.get_bot().pin_chat_message(RM6785_CHAT_ID, result.message_id)
 
     del config.config[str(update.message.reply_to_message.message_id)]
+    await message.edit_text("Posted")
 
 
 @check()
