@@ -17,8 +17,8 @@ from util.config import Config
 from telegram import Update
 from telegram.ext import ContextTypes
 
-log = logging.getLogger("toys")
-config = Config("toys.json")
+log: logging.Logger = logging.getLogger("toys")
+config: Config = Config("toys.json")
 
 
 async def random_percentage(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -35,7 +35,7 @@ async def random_percentage(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if type_ == "gay":
         rand_percent = random.randint(10, 100)
-    else:
+    elif type_ == "sexy":
         rand_percent = random.randint(-50, 100)
 
     if update.message.reply_to_message is not None:
