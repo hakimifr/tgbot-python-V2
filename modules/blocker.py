@@ -1,5 +1,6 @@
 import re
 import logging
+import telegram
 import telegram.error
 from util.help import Help
 from util.config import Config
@@ -11,12 +12,23 @@ log = logging.getLogger("modules.sticker")
 config = Config("sticker-blocklist.json")
 if config.config.get("blocklist") is None:
     config.config["blocklist"] = []
+if config.config.get("gif_blocklist") is None:
+    config.config["gif_blocklist"] = []
 
 
 async def blocker(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if update.message.sticker.set_name in config.config["blocklist"]:
+    to_be_checked: telegram.Animation | telegram.Sticker
+    if update.message.sticker is not None:
+        to_be_checked = update.message.sticker
+    elif update.message.animation is not None:
+        to_be_checked = update.message.animation
+    else:
+        log.error("???")
+        return
+
+    if to_be_checked.file_unique_id in config.config["blocklist"] + config.config["gif_blocklist"]:
         if update.message.from_user.id in RM6785_MASTER_USER:
-            log.info("Will not delete blocklisted sticker sent by master users!")
+            log.info("Will not delete blocklisted sticker/gif sent by master users!")
             return
 
         try:
@@ -52,15 +64,53 @@ async def block_unblock(update: Update, context: ContextTypes.DEFAULT_TYPE):
             config.config["blocklist"].append(update.message.reply_to_message.sticker.set_name)
             await update.message.reply_text("Blocklist updated.")
 
+    config.write_config()
+
+
+async def gblock_gunblock(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.message.from_user.id not in RM6785_MASTER_USER:
+        await update.message.reply_text("You're not allowed to do this.")
+        return
+
+    if update.message.reply_to_message is None:
+        await update.message.reply_text("Reply to a message.")
+        return
+
+    if update.message.reply_to_message.animation.file_unique_id is None:
+        await update.message.reply_text("Not a gif.")
+        return
+
+    if re.match(r"^/gunblock", update.message.text):
+        if update.message.reply_to_message.animation.file_unique_id in config.config["gif_blocklist"]:
+            config.config["gif_blocklist"].remove(update.message.reply_to_message.animation.file_unique_id)
+            await update.message.reply_text("Blocklist updated.")
+        else:
+            await update.message.reply_text("Not in blocklist.")
+
+    elif re.match(r"^/gblock", update.message.text):
+        if update.message.reply_to_message.animation.file_unique_id in config.config["gif_blocklist"]:
+            await update.message.reply_text("Gif already in blocklist.")
+        else:
+            config.config["gif_blocklist"].append(update.message.reply_to_message.animation.file_unique_id)
+            await update.message.reply_text("Blocklist updated.")
+
+    config.write_config()
+
 
 async def list_blocklist(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text: str = "Blocklisted packs:\n"
     for pack in config.config["blocklist"]:
         text += f"- {pack}\n"
+    text += "\nBlocklisted gifs:\n"
+
+    for gif in config.config["gif_blocklist"]:
+        text += f"- {gif}\n"
 
     await update.message.reply_text(text)
 
 
 Help.register_help("block", "block a sticker pack from being used")
 Help.register_help("unblock", "unblock a sticker pack")
-Help.register_help("listblocklist", "list blocked sticker pack")
+Help.register_help("gblock", "block a gif from being used")
+Help.register_help("gunblock", "unblock a gif")
+Help.register_help("listblocklist", "list blocked gif / sticker pack")

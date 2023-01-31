@@ -57,7 +57,10 @@ app.add_handler(MessageHandler(filters.Regex(r"(?i)\.deauth"), modules.rm6785.de
 
 app.add_handler(CommandHandler("block", modules.blocker.block_unblock))
 app.add_handler(CommandHandler("unblock", modules.blocker.block_unblock))
+app.add_handler(CommandHandler("gblock", modules.blocker.gblock_gunblock))
+app.add_handler(CommandHandler("gunblock", modules.blocker.gblock_gunblock))
 app.add_handler(CommandHandler("listblocklist", modules.blocker.list_blocklist))
 app.add_handler(MessageHandler(filters.Sticker.ALL, modules.blocker.blocker))
+app.add_handler(MessageHandler(filters.ANIMATION, modules.blocker.blocker))
 
 app.run_polling()
