@@ -12,6 +12,7 @@ import modules.misc
 import modules.help
 import modules.rm6785
 import modules.toys
+import modules.sticker
 
 # After these modules registers their help, we can update telegram commands and description.
 if Help.cmd_update_pending:
@@ -53,5 +54,10 @@ app.add_handler(MessageHandler(filters.Regex(r"(?i)\.post"), modules.rm6785.post
 app.add_handler(MessageHandler(filters.Regex(r"(?i)\.sticker"), modules.rm6785.sticker))
 app.add_handler(MessageHandler(filters.Regex(r"(?i)\.auth"), modules.rm6785.authorize))
 app.add_handler(MessageHandler(filters.Regex(r"(?i)\.deauth"), modules.rm6785.deauthorize))
+
+app.add_handler(CommandHandler("block", modules.sticker.block_unblock))
+app.add_handler(CommandHandler("unblock", modules.sticker.block_unblock))
+app.add_handler(CommandHandler("listblocklist", modules.sticker.list_blocklist))
+app.add_handler(MessageHandler(filters.Sticker.ALL, modules.sticker.blocker))
 
 app.run_polling()
