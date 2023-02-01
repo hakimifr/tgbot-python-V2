@@ -1,6 +1,7 @@
 import logging
 from pathlib import Path
 from telegram import Update
+from util.help import Help
 from telegram.ext import ContextTypes
 from modules.rm6785 import RM6785_MASTER_USER
 log: logging.Logger = logging.getLogger("modules.log")
@@ -18,3 +19,6 @@ async def get_log(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
     
     await update.message.reply_document(Path("bot.log"))
+
+
+Help.register_help("getlog", "Retrieve bot log")
