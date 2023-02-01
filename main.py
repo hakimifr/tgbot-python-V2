@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import logging
-logging.basicConfig(format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO)
+logging.basicConfig(format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO, filename="bot.log")
 
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters
 from api_token import TOKEN
@@ -13,6 +13,7 @@ import modules.help
 import modules.rm6785
 import modules.toys
 import modules.blocker
+import modules.log
 
 # After these modules registers their help, we can update telegram commands and description.
 if Help.cmd_update_pending:
@@ -62,5 +63,7 @@ app.add_handler(CommandHandler("gunblock", modules.blocker.gblock_gunblock))
 app.add_handler(CommandHandler("listblocklist", modules.blocker.list_blocklist))
 app.add_handler(MessageHandler(filters.Sticker.ALL, modules.blocker.blocker))
 app.add_handler(MessageHandler(filters.ANIMATION, modules.blocker.blocker))
+
+app.add_handler(CommandHandler("getlog", modules.log.get_log))
 
 app.run_polling()
