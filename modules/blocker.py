@@ -34,7 +34,7 @@ async def blocker(update: Update, context: ContextTypes.DEFAULT_TYPE):
         try:
             await update.message.delete()
         except telegram.error.BadRequest:
-            log.warn("Failed to delete blocklisted sticker")
+            log.warning("Failed to delete blocklisted sticker")
 
 
 async def block_unblock(update: Update, context: ContextTypes.DEFAULT_TYPE):
