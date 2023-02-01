@@ -17,16 +17,16 @@ if config.config.get("gif_blocklist") is None:
 
 
 async def blocker(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    to_be_checked: telegram.Animation | telegram.Sticker
+    to_be_checked: str
     if update.message.sticker is not None:
-        to_be_checked = update.message.sticker
+        to_be_checked = update.message.sticker.set_name
     elif update.message.animation is not None:
-        to_be_checked = update.message.animation
+        to_be_checked = update.message.animation.file_unique_id
     else:
         log.error("???")
         return
 
-    if to_be_checked.file_unique_id in config.config["blocklist"] + config.config["gif_blocklist"]:
+    if to_be_checked in config.config["blocklist"] + config.config["gif_blocklist"]:
         if update.message.from_user.id in RM6785_MASTER_USER:
             log.info("Will not delete blocklisted sticker/gif sent by master users!")
             return
