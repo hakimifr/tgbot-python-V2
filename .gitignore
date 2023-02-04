@@ -7,3 +7,6 @@ api_token.py
 
 # Debugging logs
 *.log
+
+# Config files
+*.json
