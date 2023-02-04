@@ -14,6 +14,7 @@ import modules.rm6785
 import modules.toys
 import modules.blocker
 import modules.log
+import modules.updater
 
 # After these modules registers their help, we can update telegram commands and description.
 if Help.cmd_update_pending:
@@ -25,7 +26,9 @@ if Help.cmd_update_pending:
 # import modules.komaru           # Pranaya's komaru GIFs channel management
 # import modules.toys             # Useless stuffs for fun, e.g. /shuf, etc
 
-app = ApplicationBuilder().token(TOKEN).build()
+app = ApplicationBuilder().token(TOKEN) \
+                          .post_init(modules.updater.finish_update) \
+                          .build()
 
 app.add_handler(CommandHandler("start", modules.core.start))
 app.add_handler(CommandHandler("neofetch", modules.misc.neofetch))
@@ -65,5 +68,7 @@ app.add_handler(MessageHandler(filters.Sticker.ALL, modules.blocker.blocker))
 app.add_handler(MessageHandler(filters.ANIMATION, modules.blocker.blocker))
 
 app.add_handler(CommandHandler("getlog", modules.log.get_log))
+
+app.add_handler(CommandHandler("update", modules.updater.update))
 
 app.run_polling()
