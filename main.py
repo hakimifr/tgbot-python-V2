@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 
 import logging
-logging.basicConfig(format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO, filename="bot.log")
+logging.basicConfig(format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+                    level=logging.INFO,
+                    filename="bot.log")
 
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters
 from api_token import TOKEN
