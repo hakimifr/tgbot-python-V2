@@ -23,8 +23,6 @@ async def extract_zip(file: telegram.File, update: Update,
                                 f"than {FileSizeLimit.FILESIZE_DOWNLOAD}")
         return
 
-    log.error(isinstance(file, telegram.File))
-    log.error(dir(file))
     zipfile: Path = await file.download_to_drive(custom_path=tmpfile.name)
     if not is_zipfile(zipfile):
         await message.edit_text("Not a valid zip file.")
