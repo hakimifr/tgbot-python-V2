@@ -73,5 +73,6 @@ app.add_handler(CommandHandler("getlog", modules.log.get_log))
 app.add_handler(CommandHandler("update", modules.updater.update))
 
 app.add_handler(CommandHandler("unzip", modules.archive.unzip))
+app.add_handler(CommandHandler("unzipl", modules.archive.unzip))
 
 app.run_polling()

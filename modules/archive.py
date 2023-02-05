@@ -1,3 +1,4 @@
+import re
 import logging
 import telegram
 import telegram.error
@@ -12,11 +13,20 @@ from telegram.constants import FileSizeLimit
 log: logging.Logger = logging.getLogger("modules.archive")
 
 
-async def extract_zip(file: telegram.File, update: Update,
-                      context: ContextTypes.DEFAULT_TYPE) -> None:
+async def extract_zip(file: telegram.File, entry_list: list[str] | None,  # type: ignore
+                      update: Update, context: ContextTypes.DEFAULT_TYPE,
+                      just_list: bool = False) -> None:
+    if entry_list is None:
+        entry_list: list[str] = []
+
     message: telegram.Message = await update.message.reply_text("Processing file")
     tmpdir: TemporaryDirectory = TemporaryDirectory()
     tmpfile: _TemporaryFileWrapper = NamedTemporaryFile()
+    extract_all: bool = True
+    exist_entry: list[str] = []
+
+    if len(entry_list) > 0:
+        extract_all: bool = False
 
     if file.file_size > FileSizeLimit.FILESIZE_DOWNLOAD:
         await message.edit_text("Sorry, bot cannot download file larger "
@@ -29,13 +39,29 @@ async def extract_zip(file: telegram.File, update: Update,
         return
 
     zip: ZipFile = ZipFile(zipfile)
-    zip.extractall(path=tmpdir.name)
+    if just_list:
+        await message.edit_text(str(zip.namelist()))
+        return
+
+    if extract_all:
+        zip.extractall(path=tmpdir.name)
+    else:
+        exist_entry = [entry for entry in entry_list if entry in zip.namelist()]
+        log.info(f"exist_entry: {exist_entry}")
+        zip.extractall(path=tmpdir.name, members=exist_entry)
+
     for entry in zip.namelist():
         if Path(entry).joinpath(tmpdir.name).resolve().exists():
             log.info(f"OK: {entry}")
 
     oversized_files: list[str] = []
-    for entry in zip.namelist():
+
+    if extract_all:
+        file_to_upload_entry: list[str] = zip.namelist()
+    else:
+        file_to_upload_entry: list[str] = exist_entry
+
+    for entry in file_to_upload_entry:
         if (Path(tmpdir.name).joinpath(entry).stat().st_size
                 > FileSizeLimit.FILESIZE_UPLOAD):
             log.warning(f"File {file} exceed Telegram upload size "
@@ -56,7 +82,7 @@ async def extract_zip(file: telegram.File, update: Update,
         except telegram.error.TelegramError:
             log.error(f"Failed to upload {entry}")
 
-    text: str = "Finished unzipping.\n"
+    text: str = "Finished processing.\n"
     if len(oversized_files) > 0:
         text += "Cannot send the following files because they " \
                 "exceed the max size:\n"
@@ -75,7 +101,12 @@ async def unzip(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     file: telegram.File = await update.message.reply_to_message.document.get_file()
-    await extract_zip(file, update, context)
+    if re.match(r"^/unzipl", update.message.text):
+        await extract_zip(file, context.args, update, context, just_list=True)
+        return
+
+    await extract_zip(file, context.args, update, context)
 
 
 Help.register_help("unzip", "Unzip to replied file")
+Help.register_help("unzipl", "List zip file content")
