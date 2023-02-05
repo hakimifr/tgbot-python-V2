@@ -36,7 +36,7 @@ async def extract_zip(file: telegram.File, update: Update,
 
     oversized_files: list[str] = []
     for entry in zip.namelist():
-        if (Path(entry).joinpath(tmpdir.name).stat().st_size
+        if (Path(tmpdir.name).joinpath(entry).stat().st_size
                 > FileSizeLimit.FILESIZE_UPLOAD):
             log.warning(f"File {file} exceed Telegram upload size "
                         f"limit of {FileSizeLimit.FILESIZE_UPLOAD}")
