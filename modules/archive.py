@@ -31,16 +31,22 @@ async def extract_zip(file: telegram.File, entry_list: list[str] | None,  # type
     if file.file_size > FileSizeLimit.FILESIZE_DOWNLOAD:
         await message.edit_text("Sorry, bot cannot download file larger "
                                 f"than {FileSizeLimit.FILESIZE_DOWNLOAD}")
+        tmpfile.close()
+        tmpdir.cleanup()
         return
 
     zipfile: Path = await file.download_to_drive(custom_path=tmpfile.name)
     if not is_zipfile(zipfile):
         await message.edit_text("Not a valid zip file.")
+        tmpfile.close()
+        tmpdir.cleanup()
         return
 
     zip: ZipFile = ZipFile(zipfile)
     if just_list:
         await message.edit_text(str(zip.namelist()))
+        tmpfile.close()
+        tmpdir.cleanup()
         return
 
     if extract_all:
