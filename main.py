@@ -15,6 +15,7 @@ import modules.toys
 import modules.blocker
 import modules.log
 import modules.updater
+import modules.archive
 
 # After these modules registers their help, we can update telegram commands and description.
 if Help.cmd_update_pending:
@@ -70,5 +71,7 @@ app.add_handler(MessageHandler(filters.ANIMATION, modules.blocker.blocker))
 app.add_handler(CommandHandler("getlog", modules.log.get_log))
 
 app.add_handler(CommandHandler("update", modules.updater.update))
+
+app.add_handler(CommandHandler("unzip", modules.archive.unzip))
 
 app.run_polling()
