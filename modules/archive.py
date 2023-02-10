@@ -9,6 +9,7 @@ from zipfile import ZipFile, is_zipfile
 from tempfile import TemporaryDirectory, _TemporaryFileWrapper, NamedTemporaryFile
 from telegram import Update
 from telegram.ext import ContextTypes
+from telegram.helpers import escape_markdown
 from telegram.constants import FileSizeLimit
 log: logging.Logger = logging.getLogger("modules.archive")
 
@@ -44,7 +45,8 @@ async def extract_zip(file: telegram.File, entry_list: list[str] | None,  # type
 
     zip: ZipFile = ZipFile(zipfile)
     if just_list:
-        await message.edit_text(str(zip.namelist()))
+        await message.edit_text("`" + escape_markdown(str(zip.namelist()), version=2)
+                                + "`", parse_mode="MarkdownV2")
         tmpfile.close()
         tmpdir.cleanup()
         return
@@ -83,7 +85,8 @@ async def extract_zip(file: telegram.File, entry_list: list[str] | None,  # type
             log.info(f"Uploading {entry}")
             await update.message.reply_document(
                 Path(tmpdir.name).joinpath(entry),
-                caption=entry
+                caption="`" + escape_markdown(entry, version=2) + "`",
+                parse_mode="MarkdownV2"
             )
         except telegram.error.TelegramError:
             log.error(f"Failed to upload {entry}")
