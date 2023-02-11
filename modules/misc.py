@@ -1,5 +1,4 @@
 import sys
-import json
 import requests
 import subprocess
 from util.help import Help
@@ -14,7 +13,7 @@ async def neofetch(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
 async def magisk(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     resp: requests.Response = requests.get("https://api.github.com/repos/topjohnwu/Magisk/releases/latest")
-    resp_obj: dict = json.loads(resp.text)
+    resp_obj: dict = resp.json()
     assets: dict = resp_obj.get("assets")[0]
 
     dl_stable: str = assets.get("browser_download_url")
