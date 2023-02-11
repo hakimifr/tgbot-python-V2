@@ -18,7 +18,7 @@ class Help:
         # commands: list[BotCommand] = []
         # for cmd in cls.help_messages.keys():
         #     commands.append(BotCommand(cmd, cls.help_messages.get(cmd)))
-        commands: list[BotCommand] = [BotCommand(cmd, cls.help_messages.get(cmd)) for cmd in cls.help_messages.keys()]
+        commands: list[BotCommand] = [BotCommand(cmd, cls.help_messages.get(cmd, "")) for cmd in cls.help_messages.keys()]
 
         log.info("Updating bot cmd")
         cls.loop.run_until_complete(cls.bot.delete_my_commands())
