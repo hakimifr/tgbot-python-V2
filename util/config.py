@@ -33,7 +33,7 @@ class Config:
     def write_config(self) -> None:
         log.info(f"Writing config to {self.file}")
         with open(self.file, "w") as config_file:
-            json.dump(self.config, config_file)
+            json.dump(self.config, config_file, indent=2)
         self.write_pending = False
 
     def read_config(self) -> None:
