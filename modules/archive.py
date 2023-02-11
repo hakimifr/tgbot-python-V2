@@ -54,7 +54,7 @@ async def extract_zip(file: telegram.File, entry_list: list[str] | None,  # type
     if extract_all:
         zip.extractall(path=tmpdir.name)
     else:
-        exist_entry = [entry for entry in entry_list if entry in zip.namelist()]
+        exist_entry: list[str] = [entry for entry in entry_list if entry in zip.namelist()]
         log.info(f"exist_entry: {exist_entry}")
         zip.extractall(path=tmpdir.name, members=exist_entry)
 
@@ -104,7 +104,7 @@ async def extract_zip(file: telegram.File, entry_list: list[str] | None,  # type
     tmpfile.close()
 
 
-async def unzip(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def unzip(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if update.message.reply_to_message.document is None:
         await update.message.reply_text("Please reply to a file.")
         return

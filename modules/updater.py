@@ -2,7 +2,7 @@ import logging
 import telegram.error
 from time import sleep
 from os import system, execv
-from telegram import Update
+from telegram import Update, Message
 from util.help import Help
 from util.config import Config
 from telegram.ext import ContextTypes, Application
@@ -43,7 +43,7 @@ async def finish_update(app: Application) -> None:
     config.write_config()
 
 
-async def update(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def update(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if update.message.from_user.id not in RM6785_MASTER_USER:
         await update.message.reply_text("You're not allowed to do this.")
         return
@@ -55,7 +55,7 @@ async def update(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("Failed to git pull")
         return
 
-    reply = await update.message.reply_text("Updating bot")
+    reply: Message = await update.message.reply_text("Updating bot")
     log.info("Restarting bot")
 
     config.config = {

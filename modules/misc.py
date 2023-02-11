@@ -8,7 +8,7 @@ from telegram.ext import ContextTypes
 
 
 async def neofetch(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    output = subprocess.check_output(["neofetch", "--stdout"] + context.args)
+    output: bytes = subprocess.check_output(["neofetch", "--stdout"] + context.args)
     await update.message.reply_text(output.decode(sys.stdout.encoding))
 
 

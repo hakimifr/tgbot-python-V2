@@ -27,10 +27,10 @@ Available methods:
 import logging
 from util.help import Help
 from util.config import Config
-from telegram import Update
+from telegram import Update, Message, MessageId
 from telegram.ext import ContextTypes
-log = logging.getLogger("RM6785")
-config = Config("rm6785_config.json")
+log: logging.Logger = logging.getLogger("RM6785")
+config: Config = Config("rm6785_config.json")
 
 
 # Constants
@@ -62,7 +62,7 @@ def check(count_init=False, reply_init=False):
                 await update.message.reply_text("You are not authorized to use this command.")
                 return
 
-            count = 0
+            count: int = 0
             if reply_init:
                 if update.message.reply_to_message is None:
                     await update.message.reply_text("You must reply to a message.")
@@ -70,7 +70,7 @@ def check(count_init=False, reply_init=False):
 
                 if count_init:
                     try:
-                        count = config.config[str(update.message.reply_to_message.message_id)]
+                        count: int = config.config[str(update.message.reply_to_message.message_id)]
                     except KeyError:
                         pass
 
@@ -82,7 +82,7 @@ def check(count_init=False, reply_init=False):
 
 
 @check(reply_init=True, count_init=True)
-async def approve(update: Update, context: ContextTypes.DEFAULT_TYPE, count):
+async def approve(update: Update, context: ContextTypes.DEFAULT_TYPE, count) -> None:
     if count < 2:
         count += 1
         config.config[str(update.message.reply_to_message.message_id)] = count
@@ -93,7 +93,7 @@ async def approve(update: Update, context: ContextTypes.DEFAULT_TYPE, count):
 
 
 @check(reply_init=True, count_init=True)
-async def disapprove(update: Update, context: ContextTypes.DEFAULT_TYPE, count):
+async def disapprove(update: Update, context: ContextTypes.DEFAULT_TYPE, count) -> None:
     count -= 1
     config.config[str(update.message.reply_to_message.message_id)] = count
     config.write_config()
@@ -101,14 +101,14 @@ async def disapprove(update: Update, context: ContextTypes.DEFAULT_TYPE, count):
 
 
 @check(reply_init=True, count_init=True)
-async def post(update: Update, context: ContextTypes.DEFAULT_TYPE, count):
+async def post(update: Update, context: ContextTypes.DEFAULT_TYPE, count) -> None:
     if count < 2:
         await update.message.reply_text("Not enough approval!")
         return
 
-    message = await update.message.reply_text("One moment...")
+    message: Message = await update.message.reply_text("One moment...")
     await update.message.reply_to_message.copy(RM6785_CHANNEL_ID)
-    result = await update.message.reply_to_message.copy(RM6785_CHAT_ID)
+    result: MessageId = await update.message.reply_to_message.copy(RM6785_CHAT_ID)
     await result.get_bot().pin_chat_message(RM6785_CHAT_ID, result.message_id)
 
     del config.config[str(update.message.reply_to_message.message_id)]
@@ -116,14 +116,14 @@ async def post(update: Update, context: ContextTypes.DEFAULT_TYPE, count):
 
 
 @check()
-async def sticker(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    message = await update.message.reply_text("Sending sticker...")
+async def sticker(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    message: Message = await update.message.reply_text("Sending sticker...")
     await update.get_bot().send_sticker(RM6785_CHANNEL_ID, RM6785_UPDATE_STICKER)
     await message.edit_text("Sticker sent")
 
 
 @check(reply_init=True)
-async def authorize(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def authorize(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if update.message.from_user.id not in RM6785_MASTER_USER:
         await update.message.reply_text("You are not allowed to use this command.")
         return
@@ -139,7 +139,7 @@ async def authorize(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 @check(reply_init=True)
-async def deauthorize(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def deauthorize(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if update.message.from_user.id not in RM6785_MASTER_USER:
         await update.message.reply_text("You are not allowed to use this command.")
         return
@@ -154,7 +154,7 @@ async def deauthorize(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(f"User {update.message.reply_to_message.from_user.first_name} is now deauthorized.")
 
 
-async def listauth(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def listauth(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     config.read_config()
     text = "Master users \(these users are hardcoded in the codebase\):\n"  # noqa: W605
     for userid in RM6785_MASTER_USER:

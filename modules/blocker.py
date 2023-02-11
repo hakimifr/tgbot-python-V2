@@ -7,21 +7,21 @@ from util.config import Config
 from modules.rm6785 import RM6785_MASTER_USER
 from telegram import Update
 from telegram.ext import ContextTypes
-log = logging.getLogger("modules.sticker")
+log: logging.Logger = logging.getLogger("modules.sticker")
 
-config = Config("sticker-blocklist.json")
+config: Config = Config("sticker-blocklist.json")
 if config.config.get("blocklist") is None:
     config.config["blocklist"] = []
 if config.config.get("gif_blocklist") is None:
     config.config["gif_blocklist"] = []
 
 
-async def blocker(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def blocker(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     to_be_checked: str
     if update.message.sticker is not None:
-        to_be_checked = update.message.sticker.set_name
+        to_be_checked: str = update.message.sticker.set_name
     elif update.message.animation is not None:
-        to_be_checked = update.message.animation.file_unique_id
+        to_be_checked: str = update.message.animation.file_unique_id
     else:
         log.error("???")
         return
@@ -37,7 +37,7 @@ async def blocker(update: Update, context: ContextTypes.DEFAULT_TYPE):
             log.warning("Failed to delete blocklisted sticker")
 
 
-async def block_unblock(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def block_unblock(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if update.message.from_user.id not in RM6785_MASTER_USER:
         await update.message.reply_text("You're not allowed to do this.")
         return
@@ -67,7 +67,7 @@ async def block_unblock(update: Update, context: ContextTypes.DEFAULT_TYPE):
     config.write_config()
 
 
-async def gblock_gunblock(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def gblock_gunblock(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if update.message.from_user.id not in RM6785_MASTER_USER:
         await update.message.reply_text("You're not allowed to do this.")
         return
@@ -97,7 +97,7 @@ async def gblock_gunblock(update: Update, context: ContextTypes.DEFAULT_TYPE):
     config.write_config()
 
 
-async def list_blocklist(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def list_blocklist(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     text: str = "Blocklisted packs:\n"
     for pack in config.config["blocklist"]:
         text += f"- {pack}\n"

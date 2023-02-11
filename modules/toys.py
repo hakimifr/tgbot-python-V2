@@ -14,44 +14,44 @@ import random
 import re
 from util.help import Help
 from util.config import Config
-from telegram import Update
+from telegram import Update, Message
 from telegram.ext import ContextTypes
 
 log: logging.Logger = logging.getLogger("toys")
 config: Config = Config("toys.json")
 
 
-async def random_percentage(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def random_percentage(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     type_: str
     user: str
     rand_percent: int
 
     # Check type, whether sexy or gay
     if re.match(r"^/gay", update.message.text):
-        type_ = "gay"
+        type_: str = "gay"
     else:
-        type_ = "sexy"
-    ret = await update.message.reply_text(f"Calculating {type_}ness...")
+        type_: str = "sexy"
+    ret: Message = await update.message.reply_text(f"Calculating {type_}ness...")
 
     if type_ == "gay":
-        rand_percent = random.randint(10, 100)
+        rand_percent: int = random.randint(10, 100)
     elif type_ == "sexy":
-        rand_percent = random.randint(-50, 100)
+        rand_percent: int = random.randint(-50, 100)
 
     if update.message.reply_to_message is not None:
-        user = update.message.reply_to_message.from_user.first_name
+        user: str = update.message.reply_to_message.from_user.first_name
     else:
-        user = update.message.from_user.first_name
+        user: str = update.message.from_user.first_name
 
     await ret.edit_text(f"{user} is {rand_percent}% {type_}")
 
 
-async def shuffle(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def shuffle(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if update.message.reply_to_message is None:
         await update.message.reply_text("You must reply to a message.")
         return
 
-    ret = await update.message.reply_text("Shuffling...")
+    ret: Message = await update.message.reply_text("Shuffling...")
     text: list[str] = update.message.reply_to_message.text.split(" ")
     random.shuffle(text)
 
@@ -64,16 +64,16 @@ Help.register_help("shuffle", "Shuffle replied message.")
 
 
 def init_insert_words() -> None:
-    default_words = "bsdk chutiya bc arch fedora dnf pacman gay lesbian pranaya sharan nero bot cum coom bhai bro " \
-                    "pro max dick big based rui rui2 rui1 samarbot brainfuck inactive dead optimized lines amazing " \
-                    "updated changelog bugs lag adb shell ffs f2fs ext4 ipv6 komaru cute adorable boot rom recovery " \
-                    "docker micro rose miss sir exam pactice allow invite python poothon poopthon nodejs js hello " \
-                    "world development kit lint fuck fucking madarchod behenchod message maybe ping oof available " \
-                    "solution test goes order biggest problem though command root magisk superuser insta facebook " \
-                    "fuckbook twitter ot inr 69 vanilla gapps creampie admin link embed why removed knowing certain " \
-                    "funny bootloader boobloader unlocked uncocked kang kanger sagar java gawd god samar hakimi " \
-                    "mcdonald covid kick ban fart poop pee penis enlarge chup chutiye kek speaking always never los " \
-                    "aex realme oplus vooc dart rebrand rust with vast erofs guilty wrong yeet prath joemomma"
+    default_words: str = "bsdk chutiya bc arch fedora dnf pacman gay lesbian pranaya sharan nero bot cum coom bhai bro " \
+                         "pro max dick big based rui rui2 rui1 samarbot brainfuck inactive dead optimized lines amazing " \
+                         "updated changelog bugs lag adb shell ffs f2fs ext4 ipv6 komaru cute adorable boot rom recovery " \
+                         "docker micro rose miss sir exam pactice allow invite python poothon poopthon nodejs js hello " \
+                         "world development kit lint fuck fucking madarchod behenchod message maybe ping oof available " \
+                         "solution test goes order biggest problem though command root magisk superuser insta facebook " \
+                         "fuckbook twitter ot inr 69 vanilla gapps creampie admin link embed why removed knowing certain " \
+                         "funny bootloader boobloader unlocked uncocked kang kanger sagar java gawd god samar hakimi " \
+                         "mcdonald covid kick ban fart poop pee penis enlarge chup chutiye kek speaking always never los " \
+                         "aex realme oplus vooc dart rebrand rust with vast erofs guilty wrong yeet prath joemomma"
     config.config["insert_words"]: list[str] = default_words.split(" ")
     config.write_config()
 
@@ -101,7 +101,7 @@ async def add_words(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         await update.message.reply_text("You must provide at least one word.")
         return
 
-    reply = await update.message.reply_text("Updating word database")
+    reply: Message = await update.message.reply_text("Updating word database")
     info: str = ""
     warnings: str = ""
 
@@ -113,7 +113,7 @@ async def add_words(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         else:
             warnings += f"warning: word '{word}' already exists in database.\n"
 
-    config.config["insert_words"]: list[str] = insert_words
+    config.config["insert_words"] = insert_words
     config.write_config()
 
     await reply.edit_text(f"{info}{warnings}\nSuccessfully updated the database.")
@@ -127,7 +127,7 @@ async def remove_words(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
         await update.message.reply_text("You must provide at least one word.")
         return
 
-    reply = await update.message.reply_text("Updating word database")
+    reply: Message = await update.message.reply_text("Updating word database")
     info: str = ""
     warnings: str = ""
 
@@ -145,7 +145,7 @@ async def remove_words(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
     await reply.edit_text(f"{info}{warnings}\nSuccessfully updated the database.")
 
 
-async def reset_words(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def reset_words(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     init_insert_words()
     await update.message.reply_text(f"Word list reset successfully.")
 
