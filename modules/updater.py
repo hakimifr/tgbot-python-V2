@@ -2,10 +2,10 @@ import logging
 import telegram.error
 from time import sleep
 from os import system, execv
-from telegram import Update, Message
+from telegram import Update, Message, InlineKeyboardMarkup, InlineKeyboardButton
 from util.help import Help
 from util.config import Config
-from telegram.ext import ContextTypes, Application
+from telegram.ext import CallbackContext, ContextTypes, Application
 from modules.rm6785 import RM6785_MASTER_USER
 log: logging.Logger = logging.getLogger("modules.updater")
 config: Config = Config("updater.json")
@@ -48,20 +48,40 @@ async def update(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         await update.message.reply_text("You're not allowed to do this.")
         return
 
+    keyboard: list[list[InlineKeyboardButton]] = [
+        [
+            InlineKeyboardButton("Confirm update", callback_data="updater_confirm")
+        ]
+    ]
+    await update.message.reply_text("Press this button to confirm",
+                                        reply_markup=InlineKeyboardMarkup(keyboard)
+                                    )
+
+
+async def confirm_update(update: Update, context: CallbackContext) -> None:
+    if update.callback_query.from_user.id not in RM6785_MASTER_USER:
+        await update.callback_query.edit_message_text(f"User {update.callback_query.from_user.name} is "
+                                          "not allowed to use this.")
+        return
+
+    await update_start(update, context)
+
+
+async def update_start(update: Update, context: CallbackContext) -> None:
     log.info("Updating bot")
     retval: int = system("git pull --rebase")
     if retval != 0:
         log.error("git pull failed")
-        await update.message.reply_text("Failed to git pull")
+        await update.callback_query.edit_message_text("Failed to git pull")
         return
 
-    reply: Message = await update.message.reply_text("Updating bot")
+    await update.callback_query.edit_message_text("Updating bot")
     log.info("Restarting bot")
 
     config.config = {
         "was_updated": True,
-        "chat_id": update.effective_chat.id,
-        "message_id": reply.id
+        "chat_id": update.callback_query.message.chat_id,
+        "message_id": update.callback_query.message.id
     }
     config.write_config()
 

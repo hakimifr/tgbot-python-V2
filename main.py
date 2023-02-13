@@ -5,6 +5,7 @@ logging.basicConfig(format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
                     level=logging.INFO,
                     filename="bot.log")
 
+from typing import Any
 from telegram import Update
 from telegram.ext import (
     ApplicationBuilder,
@@ -43,7 +44,9 @@ app = ApplicationBuilder().token(TOKEN) \
 
 
 async def callback(update: Update, context: CallbackContext) -> None:
-    pass
+    if update.callback_query.data == "updater_confirm":
+        await update.callback_query.answer()
+        await modules.updater.confirm_update(update, context)
 
 
 app.add_handler(CallbackQueryHandler(callback))
