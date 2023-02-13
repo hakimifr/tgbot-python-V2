@@ -5,7 +5,15 @@ logging.basicConfig(format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
                     level=logging.INFO,
                     filename="bot.log")
 
-from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters
+from telegram import Update
+from telegram.ext import (
+    ApplicationBuilder,
+    CommandHandler,
+    MessageHandler,
+    filters,
+    CallbackQueryHandler,
+    CallbackContext
+)
 from api_token import TOKEN
 from util.help import Help
 
@@ -32,6 +40,13 @@ if Help.cmd_update_pending:
 app = ApplicationBuilder().token(TOKEN) \
                           .post_init(modules.updater.finish_update) \
                           .build()
+
+
+async def callback(update: Update, context: CallbackContext) -> None:
+    pass
+
+
+app.add_handler(CallbackQueryHandler(callback))
 
 app.add_handler(CommandHandler("start", modules.core.start))
 app.add_handler(CommandHandler("neofetch", modules.misc.neofetch))
