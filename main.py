@@ -45,7 +45,6 @@ app = ApplicationBuilder().token(TOKEN) \
 
 async def callback(update: Update, context: CallbackContext) -> None:
     if update.callback_query.data == "updater_confirm":
-        await update.callback_query.answer()
         await modules.updater.confirm_update(update, context)
 
 

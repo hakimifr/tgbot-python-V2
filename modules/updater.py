@@ -60,8 +60,8 @@ async def update(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
 async def confirm_update(update: Update, context: CallbackContext) -> None:
     if update.callback_query.from_user.id not in RM6785_MASTER_USER:
-        await update.callback_query.edit_message_text(f"User {update.callback_query.from_user.name} is "
-                                          "not allowed to use this.")
+        await update.callback_query.answer(text="You're not allowed to do this.",
+                                           show_alert=True)
         return
 
     await update_start(update, context)
