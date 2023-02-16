@@ -9,6 +9,7 @@ from telegram.ext import CallbackContext, ContextTypes, Application
 from modules.rm6785 import RM6785_MASTER_USER
 log: logging.Logger = logging.getLogger(__name__)
 config: Config = Config("updater.json")
+name: str = __name__
 """structure of updater.json:
 {
     was_updated: bool,
@@ -50,7 +51,7 @@ async def update(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
     keyboard: list[list[InlineKeyboardButton]] = [
         [
-            InlineKeyboardButton("Confirm update", callback_data="updater_confirm")
+            InlineKeyboardButton("Confirm update", callback_data=f"{__name__}:confirm_update")
         ]
     ]
     await update.message.reply_text("Press this button to confirm",
