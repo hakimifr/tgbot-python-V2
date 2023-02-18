@@ -6,7 +6,7 @@ from telegram import Update, Message
 from telegram.ext import ContextTypes
 
 SAVED_MESSAGE_CHAT_ID = -1001607510711
-log: logging.Logger = logging.getLogger("modules.core")
+log: logging.Logger = logging.getLogger(__name__)
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text("A bot written in Python3, by @Hakimi0804.")

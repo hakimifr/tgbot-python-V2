@@ -29,7 +29,7 @@ from util.help import Help
 from util.config import Config
 from telegram import Update, Message, MessageId
 from telegram.ext import ContextTypes
-log: logging.Logger = logging.getLogger("RM6785")
+log: logging.Logger = logging.getLogger(__name__)
 config: Config = Config("rm6785_config.json")
 
 

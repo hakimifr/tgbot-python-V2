@@ -17,7 +17,7 @@ from util.config import Config
 from telegram import Update, Message
 from telegram.ext import ContextTypes
 
-log: logging.Logger = logging.getLogger("toys")
+log: logging.Logger = logging.getLogger(__name__)
 config: Config = Config("toys.json")
 
 

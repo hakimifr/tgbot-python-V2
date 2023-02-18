@@ -2,7 +2,7 @@ import asyncio
 import logging
 from api_token import TOKEN
 from telegram import Bot, BotCommand
-log = logging.getLogger("help-util")
+log: logging.Logger = logging.getLogger(__name__)
 
 
 class Help:

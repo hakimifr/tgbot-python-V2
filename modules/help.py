@@ -9,7 +9,7 @@ import logging
 from util.help import Help
 from telegram import Update
 from telegram.ext import ContextTypes
-log: logging.Logger = logging.getLogger("help-module")
+log: logging.Logger = logging.getLogger(__name__)
 
 
 async def bot_help(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:

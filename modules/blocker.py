@@ -7,7 +7,7 @@ from util.config import Config
 from modules.rm6785 import RM6785_MASTER_USER
 from telegram import Update
 from telegram.ext import ContextTypes
-log: logging.Logger = logging.getLogger("modules.sticker")
+log: logging.Logger = logging.getLogger(__name__)
 
 config: Config = Config("sticker-blocklist.json")
 if config.config.get("blocklist") is None:

@@ -7,7 +7,7 @@ from util.help import Help
 from util.config import Config
 from telegram.ext import CallbackContext, ContextTypes, Application
 from modules.rm6785 import RM6785_MASTER_USER
-log: logging.Logger = logging.getLogger("modules.updater")
+log: logging.Logger = logging.getLogger(__name__)
 config: Config = Config("updater.json")
 """structure of updater.json:
 {

@@ -2,7 +2,7 @@ import json
 import atexit
 import logging
 from pathlib import Path
-log = logging.getLogger("config")
+log: logging.Logger = logging.getLogger(__name__)
 
 
 class Config:
