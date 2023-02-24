@@ -112,6 +112,7 @@ async def post(update: Update, context: ContextTypes.DEFAULT_TYPE, count) -> Non
     await result.get_bot().pin_chat_message(RM6785_CHAT_ID, result.message_id)
 
     del config.config[str(update.message.reply_to_message.message_id)]
+    config.write_config()
     await message.edit_text("Posted")
 
 
