@@ -27,6 +27,7 @@ import modules.blocker
 import modules.log
 import modules.updater
 import modules.archive
+import modules.openai
 
 # After these modules registers their help, we can update telegram commands and description.
 if Help.cmd_update_pending:
@@ -93,5 +94,7 @@ app.add_handler(CommandHandler("update", modules.updater.update))
 
 app.add_handler(CommandHandler("unzip", modules.archive.unzip))
 app.add_handler(CommandHandler("unzipl", modules.archive.unzip))
+
+app.add_handler(CommandHandler("gpt3", modules.openai.gpt3))
 
 app.run_polling()
