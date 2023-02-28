@@ -18,7 +18,7 @@ async def gpt3(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
     aresult = await openai.Completion.acreate(prompt=" ".join(context.args),
                                               engine="text-davinci-003",
-                                              max_tokens=500,
+                                              max_tokens=1000,
                                               temperature=0.5)
 
     await msg.edit_text(aresult["choices"][0]["text"])
