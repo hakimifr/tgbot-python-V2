@@ -10,6 +10,9 @@ openai.api_key = OPENAI_API_KEY
 
 
 async def gpt3(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    await update.message.reply_text("bsdk")
+    return
+
     msg = await update.message.reply_text("Generating response...")
 
     if not context.args:
