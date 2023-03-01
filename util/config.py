@@ -28,6 +28,7 @@ class Config:
             # Create the file to avoid traceback during read_config() call
             with open(self.file, "w") as config:
                 config.write("{}")
+            self.read_config()
 
         # Make sure changes are written upon exit
         atexit.register(self.on_exit)
