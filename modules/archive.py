@@ -4,6 +4,7 @@ import telegram
 import telegram.error
 
 from pathlib import Path
+from pprint import pformat
 from util.help import Help
 from zipfile import ZipFile, is_zipfile
 from tempfile import TemporaryDirectory, _TemporaryFileWrapper, NamedTemporaryFile
@@ -45,8 +46,10 @@ async def extract_zip(file: telegram.File, entry_list: list[str] | None,  # type
 
     zip: ZipFile = ZipFile(zipfile)
     if just_list:
-        await message.edit_text("`" + escape_markdown(str(zip.namelist()), version=2)
-                                + "`", parse_mode="MarkdownV2")
+        await message.edit_text(
+            "```python\n" + escape_markdown(pformat(zip.namelist()), version=2)
+            + "\n```", parse_mode="MarkdownV2"
+        )
         tmpfile.close()
         tmpdir.cleanup()
         return
