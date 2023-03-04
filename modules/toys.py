@@ -40,9 +40,19 @@ async def random_percentage(update: Update, context: ContextTypes.DEFAULT_TYPE) 
     ret: Message = await update.message.reply_text(f"Calculating {type_}ness...")
 
     if type_ == "gay":
-        rand_percent: int = random.randint(10, 100)
+        if 'gei_percent' in context.user_data and datetime.utcnow().date() == context.user_data['gei_number_date']:
+            rand_percent = context.user_data['gei_percent']
+        else:
+            rand_percent: int = random.randint(10, 100)
+            context.user_data['gei_percent'] = rand_percent
+            context.user_data['gei_number_date'] = datetime.utcnow().date()
     elif type_ == "sexy":
-        rand_percent: int = random.randint(-50, 100)
+        if 'semx_percent' in context.user_data and datetime.utcnow().date() == context.user_data['semx_number_date']:
+            rand_percent = context.user_data['semx_percent']
+        else:
+            rand_percent: int = random.randint(-50, 100)
+            context.user_data['semx_percent'] = rand_percent
+            context.user_data['semx_number_date'] = datetime.utcnow().date()
 
     if update.message.reply_to_message is not None:
         user: str = update.message.reply_to_message.from_user.first_name
