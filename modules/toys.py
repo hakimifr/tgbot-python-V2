@@ -59,7 +59,7 @@ async def random_percentage(update: Update, context: ContextTypes.DEFAULT_TYPE) 
     else:
         user: str = update.message.from_user.first_name
 
-    await ret.edit_text(f"{user} is {rand_percent}% {type_}")
+    await ret.edit_text(f"Today {user} is {rand_percent}% {type_}")
 
 
 async def choice(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
