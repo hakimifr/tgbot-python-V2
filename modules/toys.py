@@ -12,6 +12,12 @@ Available methods:
 import logging
 import random
 import re
+from datetime import datetime
+
+from telegram import Message, Update
+from telegram.ext import ContextTypes
+
+from util.config import Config
 from util.help import Help
 from util.config import Config
 from telegram import Update, Message
@@ -46,6 +52,9 @@ async def random_percentage(update: Update, context: ContextTypes.DEFAULT_TYPE) 
     await ret.edit_text(f"{user} is {rand_percent}% {type_}")
 
 
+async def choice(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    await update.message.reply_text(random.choices(['yes.', 'no.', 'Hell yeah!'], [49, 49, 2])[0])
+
 async def shuffle(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if update.message.reply_to_message is None:
         await update.message.reply_text("You must reply to a message.")
@@ -58,6 +67,7 @@ async def shuffle(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await ret.edit_text(" ".join(text))
 
 
+Help.register_help("choice", "Random yes/no generation.")
 Help.register_help("gay", "Return gayness level of you/replied user.")
 Help.register_help("sexy", "Return sexiness level of you/replied user.")
 Help.register_help("shuffle", "Shuffle replied message.")

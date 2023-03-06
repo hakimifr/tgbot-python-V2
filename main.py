@@ -66,6 +66,7 @@ app.add_handler(CommandHandler("listauth", modules.rm6785.listauth))
 app.add_handler(CommandHandler("gay", modules.toys.random_percentage))
 app.add_handler(CommandHandler("sexy", modules.toys.random_percentage))
 app.add_handler(CommandHandler("shuffle", modules.toys.shuffle))
+app.add_handler(CommandHandler("choice", modules.toys.choice))
 
 # Added by Pratham :sunglasses:
 app.add_handler(CommandHandler("insert", modules.toys.insert))
