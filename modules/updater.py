@@ -1,7 +1,10 @@
+import os
+import sys
 import logging
 import telegram.error
+
 from time import sleep
-from os import system, execv
+from os import system, execve
 from telegram import Update, Message, InlineKeyboardMarkup, InlineKeyboardButton
 from util.help import Help
 from util.config import Config
@@ -93,7 +96,7 @@ async def update_start(update: Update, context: CallbackContext) -> None:
     except telegram.error.TimedOut:
         pass
 
-    execv("/usr/bin/python3", ["/usr/bin/python3", "main.py"])
+    execve(sys.executable, [sys.executable, *sys.argv], os.environ)
 
 
 Help.register_help("update", "Update and restart the bot.")
