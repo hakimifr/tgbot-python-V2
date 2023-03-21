@@ -19,12 +19,17 @@ async def gpt3(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         await msg.edit_text("Give some text sir")
         return
 
-    aresult = await openai.Completion.acreate(prompt=" ".join(context.args),
-                                              engine="text-davinci-003",
-                                              max_tokens=1000,
-                                              temperature=1)
+    aresult = await openai.ChatCompletion.acreate(messages=[
+                                                    {
+                                                       "role": "user",
+                                                       "content": f"{' '.join(context.args)}",
+                                                    }
+                                                  ],
+                                                  model="gpt-3.5-turbo",
+                                                  max_tokens=1000,
+                                                  temperature=1)
 
-    await msg.edit_text(aresult["choices"][0]["text"])
+    await msg.edit_text(aresult["choices"][0]["message"]["content"])
 
 
 Help.register_help("gpt3", "Generate a GPT-3 response")
