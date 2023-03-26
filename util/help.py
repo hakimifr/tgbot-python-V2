@@ -1,9 +1,14 @@
+import os
 import asyncio
 import logging
-from api_token import TOKEN
 from telegram import Bot, BotCommand
 log: logging.Logger = logging.getLogger(__name__)
 
+try:
+    from api_token import TOKEN
+except ImportError:
+    if not (TOKEN := os.getenv("BOT_TOKEN")):
+        log.critical("Failed to get bot token")
 
 class Help:
     """Class for storing help strings. Class methods only."""

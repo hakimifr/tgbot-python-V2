@@ -1,13 +1,15 @@
+import os
 import time
 import logging
 import openai
 
 from util.help import Help
 from util.config import Config
-from api_token import OPENAI_API_KEY
 from telegram import Update
 from telegram.ext import ContextTypes
 
+log: logging.Logger = logging.getLogger(__name__)
+API_KEY_OK = True
 RESTRICTED_CHATS_KEY: str = "restricted_chats"
 LIMIT_IN_SEC: int = 75
 COMPLETION_SETTINGS: dict = {
@@ -16,7 +18,13 @@ COMPLETION_SETTINGS: dict = {
     "temperature": 0.2
 }
 
-log: logging.Logger = logging.getLogger(__name__)
+try:
+    from api_token import OPENAI_API_KEY
+except ImportError:
+    if not (OPENAI_API_KEY := os.getenv("OPENAI_API_KEY")):
+        log.error("Cannot get OpenAI api key; module will be disabled.")
+        API_KEY_OK = False
+
 config: Config = Config("openai.json")
 openai.api_key = OPENAI_API_KEY
 
@@ -26,6 +34,10 @@ if not config.config.get(RESTRICTED_CHATS_KEY):
 
 
 async def gpt3(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    if not API_KEY_OK:
+        log.error("Module was triggered, but token is not available")
+        return
+
     if timestamp := config.config[RESTRICTED_CHATS_KEY].get(str(update.message.chat_id)):
         if time.time() - timestamp < LIMIT_IN_SEC:
             await update.message.reply_text("Please wait for a few mins before trying again.\n"

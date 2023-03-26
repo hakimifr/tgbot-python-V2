@@ -15,6 +15,7 @@ if GLOBAL_DEBUG:
 logging.basicConfig(format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
                     level=logging.INFO,
                     **log_additional_args)
+log = logging.getLogger(__name__)
 
 from typing import Any
 from telegram import Update
@@ -26,7 +27,15 @@ from telegram.ext import (
     CallbackQueryHandler,
     CallbackContext
 )
-from api_token import TOKEN
+
+try:
+    from api_token import TOKEN
+except ImportError:
+    if not (TOKEN := os.getenv("BOT_TOKEN")):
+        log.critical("Cannot get bot token.")
+        raise RuntimeError("Cannot get bot token either from api_token "
+                           "file or environment variable.")
+
 from util.help import Help
 
 import modules.core
