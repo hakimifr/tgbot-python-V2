@@ -44,6 +44,7 @@ RM6785_MASTER_USER: list = [1024853832, 1138003186]  # Hakimi, Samar
 
 if config.config.get("authorized_users") is None:
     config.config["authorized_users"] = []
+    config.write_config()
 
 
 # Decorator hell indeed
