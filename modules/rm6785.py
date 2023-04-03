@@ -24,6 +24,7 @@ Available methods:
         List authorized users.
 """
 
+import json
 import logging
 from util.help import Help
 from util.config import Config
@@ -170,6 +171,37 @@ async def listauth(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text(text, parse_mode="MarkdownV2")
 
 
+async def dumpconfig(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    conf: str = json.dumps(config.config)
+    await update.message.reply_text(conf)
+
+
+async def loadconfig(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    if update.message.from_user.id not in RM6785_MASTER_USER:
+        await update.message.reply_text("Only master users can do this")
+        return
+
+    if not update.message.reply_to_message:
+        await update.message.reply_text("Reply to a text message.")
+        return
+
+    if not update.message.reply_to_message.text:
+        await update.message.reply_text("That message does not contain text.")
+        return
+
+    try:
+        json.loads(update.message.reply_to_message.text)
+    except json.JSONDecodeError:
+        await update.message.reply_text("Invalid JSON.")
+        return
+
+    with open(config.file, "w") as f:
+        json.dump(json.loads(update.message.reply_to_message.text), f)
+
+    config.read_config()
+    await update.message.reply_text("New config loaded")
+
+
 Help.register_help("approve", "Approve a message to be posted.")
 Help.register_help("disapprove", "Disapprove a message to be posted.")
 Help.register_help("post", "Post replied message to @RM6785.")
@@ -177,3 +209,5 @@ Help.register_help("sticker", "Send RM6785 sticker to @RM6785.")
 Help.register_help("authorize", "Authorize a user for using RM6785 fetures.")
 Help.register_help("deauthorize", "Deauthorize a user from using RM6785 fetures.")
 Help.register_help("listauth", "List authorized users for RM6785 features.")
+Help.register_help("dumpconfig", "Dump RM6785 config file")
+Help.register_help("loadconfig", "Load RM6785 config file")
