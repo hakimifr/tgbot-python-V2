@@ -50,13 +50,18 @@ async def gpt3(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         await msg.edit_text("Give some text sir")
         return
 
-    aresult = await openai.ChatCompletion.acreate(messages=[
-                                                    {
-                                                       "role": "user",
-                                                       "content": f"{' '.join(context.args)}",
-                                                    }
-                                                  ],
-                                                  **COMPLETION_SETTINGS)
+    try:
+        aresult = await openai.ChatCompletion.acreate(messages=[
+                                                        {
+                                                           "role": "user",
+                                                           "content": f"{' '.join(context.args)}",
+                                                        }
+                                                      ],
+                                                      **COMPLETION_SETTINGS)
+    except Exception as e:
+        log.error(e)
+        await msg.edit_text(f"{e}")
+        return
 
     await msg.edit_text(aresult["choices"][0]["message"]["content"] + f"\n\n---Debug---\n{COMPLETION_SETTINGS}")
     config.config[RESTRICTED_CHATS_KEY].update({str(update.message.chat_id): time.time()})
