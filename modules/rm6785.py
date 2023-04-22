@@ -24,6 +24,7 @@ Available methods:
         List authorized users.
 """
 
+import re
 import json
 import logging
 from util.help import Help
@@ -176,6 +177,7 @@ async def dumpconfig(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
     await update.message.reply_text(conf)
 
 
+@check()
 async def loadconfig(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if update.message.from_user.id not in RM6785_MASTER_USER:
         await update.message.reply_text("Only master users can do this")
@@ -202,6 +204,18 @@ async def loadconfig(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
     await update.message.reply_text("New config loaded")
 
 
+@check()
+async def delchmsg(up: Update, ctx: ContextTypes.DEFAULT_TYPE) -> None:
+    match = re.search(r"/(\d+)$", ctx.args[0])
+    if not match:
+        await up.message.reply_text("Invalid link/ID")
+        return
+
+    await up.get_bot().delete_message(chat_id=RM6785_CHANNEL_ID,
+                                      message_id=match.group(1))
+    await up.message.reply_text("Message deleted")
+
+
 Help.register_help("approve", "Approve a message to be posted.")
 Help.register_help("disapprove", "Disapprove a message to be posted.")
 Help.register_help("post", "Post replied message to @RM6785.")
@@ -211,3 +225,4 @@ Help.register_help("deauthorize", "Deauthorize a user from using RM6785 fetures.
 Help.register_help("listauth", "List authorized users for RM6785 features.")
 Help.register_help("dumpconfig", "Dump RM6785 config file")
 Help.register_help("loadconfig", "Load RM6785 config file")
+Help.register_help("delchmsg", "Delete a channel message sent by mistake")
