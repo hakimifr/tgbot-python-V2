@@ -57,7 +57,6 @@ if Help.cmd_update_pending:
 # import modules.spam_protect     # Prevent spammers in groups
 # import modules.moderation       # /ban, /kick, etc
 # import modules.komaru           # Pranaya's komaru GIFs channel management
-# import modules.toys             # Useless stuffs for fun, e.g. /shuf, etc
 
 app = ApplicationBuilder().token(TOKEN) \
                           .post_init(modules.updater.finish_update) \
@@ -86,6 +85,7 @@ app.add_handler(CommandHandler("listauth", modules.rm6785.listauth))
 app.add_handler(CommandHandler("dumpconfig", modules.rm6785.dumpconfig))
 app.add_handler(CommandHandler("loadconfig", modules.rm6785.loadconfig))
 app.add_handler(CommandHandler("delchmsg", modules.rm6785.delchmsg))
+app.add_handler(CommandHandler("report", modules.rm6785.report))
 app.add_handler(CommandHandler("gay", modules.toys.random_percentage))
 app.add_handler(CommandHandler("sexy", modules.toys.random_percentage))
 app.add_handler(CommandHandler("shuffle", modules.toys.shuffle))
