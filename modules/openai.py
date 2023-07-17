@@ -33,11 +33,17 @@ if not config.config.get(RESTRICTED_CHATS_KEY):
     config.write_config()
 
 
-async def gpt3(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    if not API_KEY_OK:
-        log.error("Module was triggered, but token is not available")
-        return
+def check_key(function):
+    async def wrapper(*arg, **kwargs):
+        if API_KEY_OK:
+            await function(*arg, **kwargs)
+        else:
+            log.error("Module was triggered, but token is not available")
+    return wrapper
 
+
+@check_key
+async def gpt3(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if timestamp := config.config[RESTRICTED_CHATS_KEY].get(str(update.message.chat_id)):
         if time.time() - timestamp < LIMIT_IN_SEC:
             await update.message.reply_text("Please wait for a few mins before trying again.\n"
