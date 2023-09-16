@@ -25,11 +25,14 @@ class Help:
         #     commands.append(BotCommand(cmd, cls.help_messages.get(cmd)))
         commands: list[BotCommand] = [BotCommand(cmd, cls.help_messages.get(cmd, "")) for cmd in cls.help_messages.keys()]
 
-        log.info("Updating bot cmd")
-        cls.loop.run_until_complete(cls.bot.delete_my_commands())
-        cls.loop.run_until_complete(cls.bot.set_my_commands(commands))
+        try:
+            log.info("Updating bot cmd")
+            cls.loop.run_until_complete(cls.bot.delete_my_commands())
+            cls.loop.run_until_complete(cls.bot.set_my_commands(commands))
 
-        cls.cmd_update_pending = False
+            cls.cmd_update_pending = False
+        except Exception as e:
+            log.error("Failed to update bot cmd:\n" + str(e))
 
     @classmethod
     def register_help(cls, command: str, help_string: str) -> None:
