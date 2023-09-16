@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+import time
 import logging
 
 GLOBAL_DEBUG: bool = False
@@ -38,6 +39,8 @@ except ImportError:
 
 from util.help import Help
 
+log.info("Starting bot startup timer")
+import_start_time = time.time()
 import modules.core
 import modules.misc
 import modules.help
@@ -122,4 +125,5 @@ app.add_handler(CommandHandler("unzipl", modules.archive.unzip))
 
 app.add_handler(CommandHandler("gpt3", modules.openai.gpt3))
 
+log.info(f"Bot startup took {(time.time() - import_start_time):.1f}s")
 app.run_polling()
