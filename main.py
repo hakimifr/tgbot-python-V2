@@ -103,6 +103,8 @@ app.add_handler(MessageHandler(filters.Regex(r"(?i)^\.sticker"), modules.rm6785.
 app.add_handler(MessageHandler(filters.Regex(r"(?i)^\.auth"), modules.rm6785.authorize))
 app.add_handler(MessageHandler(filters.Regex(r"(?i)^\.deauth"), modules.rm6785.deauthorize))
 
+app.add_handler(MessageHandler(filters.Regex(r"#Pratham"), modules.misc.auto_forward))
+
 app.add_handler(CommandHandler("block", modules.blocker.block_unblock))
 app.add_handler(CommandHandler("unblock", modules.blocker.block_unblock))
 app.add_handler(CommandHandler("gblock", modules.blocker.gblock_gunblock))
