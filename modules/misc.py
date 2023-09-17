@@ -3,10 +3,12 @@ import logging
 import requests
 import subprocess
 from util.help import Help
+from util.config import Config
 from telegram import Update
 from telegram.ext import ContextTypes
 
-log: logging.Logger = logging.getLogger(__file__)
+main_log: logging.Logger = logging.getLogger(__file__)
+auto_forward_state: bool = True
 
 
 async def neofetch(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -25,13 +27,31 @@ async def magisk(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_markdown_v2(f"[Latest stable]({dl_stable})\n[Latest canary]({dl_canary})")
 
 
+async def toggle_auto_forward(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    global auto_forward_state
+    log = main_log.getChild("toggle_auto_forward")
+    toggle_user_whitelist = [1583181351, 1024853832]
+
+    if update.message.from_user.id not in toggle_user_whitelist:
+        await update.message.reply_text("You're not allowed to use this command.")
+        return
+
+    log.info(f"Changing auto-forward enabled state from {auto_forward_state} to {not auto_forward_state}")
+    auto_forward_state = not auto_forward_state
+    await update.message.reply_text(f"Auto-forward state changed to enabled: {auto_forward_state}")
+
+
 async def auto_forward(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    logg = log.getChild("auto_forward")
+    log = main_log.getChild("auto_forward")
     target_group_id: int = -1001511914394
     user_id = 1583181351
 
+    if not auto_forward_state:
+        log.info("Returning as auto-forward is disabled")
+        return
+
     if update.message.chat_id != target_group_id:
-        logg.debug("Not target chat, skip forwarding")
+        log.info("Not target chat, skip forwarding")
         return
 
     await update.message.forward(user_id)
