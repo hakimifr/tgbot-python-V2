@@ -4,6 +4,8 @@ import os
 import time
 import logging
 
+from pathlib import Path
+
 GLOBAL_DEBUG: bool = False
 if os.getenv("TGBOT_DEBUG") is not None:
     GLOBAL_DEBUG = True
@@ -36,6 +38,7 @@ except ImportError:
         log.critical("Cannot get bot token.")
         raise RuntimeError("Cannot get bot token either from api_token "
                            "file or environment variable.")
+Path(".token").write_text(TOKEN)
 
 from util.help import Help
 

@@ -4,6 +4,7 @@ __pycache__/
 
 # Credentials
 api_token.py
+.token
 
 # Debugging logs
 *.log
