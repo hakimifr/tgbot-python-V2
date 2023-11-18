@@ -127,7 +127,4 @@ app.add_handler(CommandHandler("unzipl", modules.archive.unzip))
 app.add_handler(CommandHandler("gpt3", modules.openai.gpt3))
 
 log.info(f"Bot startup took {(time.time() - import_start_time):.1f}s")
-
-log.info("Silencing httpx logger")
-logging.getLogger("httpx").setLevel(logging.DEBUG)
 app.run_polling()
