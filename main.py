@@ -4,7 +4,10 @@ import os
 import time
 import logging
 
+from importlib import import_module
 from pathlib import Path
+
+from util.module import ModuleMetadata
 
 GLOBAL_DEBUG: bool = False
 if os.getenv("TGBOT_DEBUG") is not None:
@@ -20,7 +23,6 @@ logging.basicConfig(format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
                     **log_additional_args)
 log = logging.getLogger(__name__)
 
-from typing import Any
 from telegram import Update
 from telegram.ext import (
     ApplicationBuilder,
@@ -75,6 +77,27 @@ async def callback(update: Update, context: CallbackContext) -> None:
 
 
 app.add_handler(CallbackQueryHandler(callback))
+
+# Load modules
+mdls = Path("modules").glob("*.py")
+for mdl in mdls:
+    mod: object = import_module("modules." + mdl.name.removesuffix(".py"))
+
+    log.info(f"Loading module '{mdl}'")
+    if not getattr(mod, "ModuleMetadata", None):
+        log.error(f"Failure loading module '{mdl}', ModuleMetadata not detected.")
+        continue
+
+    if not issubclass(mod.ModuleMetadata, ModuleMetadata):
+        log.warning(f"ModuleMetadata of module '{mdl}' is not a subclass of util.ModuleMetadata")
+
+    log.debug(f"Running setup_module() for module '{mdl}'")
+    try:
+        mod.ModuleMetadata.setup_module(app)
+        log.debug("setup_module() finished.")
+    except Exception as e:
+        log.warning(f"Error while running setup_module() for module '{mdl}', module may not work properly.")
+        log.warning(f"More info: {e}")
 
 app.add_handler(CommandHandler("start", modules.core.start))
 app.add_handler(CommandHandler("neofetch", modules.misc.neofetch))
