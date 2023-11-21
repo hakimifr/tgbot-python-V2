@@ -6,13 +6,21 @@ import telegram.error
 from pathlib import Path
 from pprint import pformat
 from util.help import Help
+import util.module
 from zipfile import ZipFile, is_zipfile
 from tempfile import TemporaryDirectory, _TemporaryFileWrapper, NamedTemporaryFile
 from telegram import Update
-from telegram.ext import ContextTypes
+from telegram.ext import ContextTypes, Application, CommandHandler
 from telegram.helpers import escape_markdown
 from telegram.constants import FileSizeLimit
 log: logging.Logger = logging.getLogger(__name__)
+
+
+class ModuleMetadata(util.module.ModuleMetadata):
+    @classmethod
+    def setup_module(cls, app: Application):
+        app.add_handler(CommandHandler("unzip", unzip))
+        app.add_handler(CommandHandler("unzipl", unzip))
 
 
 async def extract_zip(file: telegram.File, entry_list: list[str] | None,  # type: ignore

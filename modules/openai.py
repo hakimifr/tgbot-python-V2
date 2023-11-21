@@ -2,11 +2,12 @@ import os
 import time
 import logging
 import openai
+import util.module
 
 from util.help import Help
 from util.config import Config
 from telegram import Update
-from telegram.ext import ContextTypes
+from telegram.ext import ContextTypes, CommandHandler, Application
 
 log: logging.Logger = logging.getLogger(__name__)
 API_KEY_OK = True
@@ -17,6 +18,13 @@ COMPLETION_SETTINGS: dict = {
     "max_tokens": 2000,
     "temperature": 0.2
 }
+
+
+class ModuleMetadata(util.module.ModuleMetadata):
+    @classmethod
+    def setup_module(cls, app: Application):
+        app.add_handler(CommandHandler("gpt3", gpt3))
+
 
 try:
     from api_token import OPENAI_API_KEY

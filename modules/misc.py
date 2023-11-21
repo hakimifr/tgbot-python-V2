@@ -2,13 +2,23 @@ import sys
 import logging
 import requests
 import subprocess
+import util.module
 from util.help import Help
 from util.config import Config
 from telegram import Update
-from telegram.ext import ContextTypes
+from telegram.ext import ContextTypes, CommandHandler, MessageHandler, filters, Application
 
 main_log: logging.Logger = logging.getLogger(__file__)
 auto_forward_state: bool = True
+
+
+class ModuleMetadata(util.module.ModuleMetadata):
+    @classmethod
+    def setup_module(cls, app: Application):
+        app.add_handler(CommandHandler("neofetch", neofetch))
+        app.add_handler(CommandHandler("magisk", magisk))
+        app.add_handler(CommandHandler("toggleautoforward", toggle_auto_forward))
+        app.add_handler(MessageHandler(filters.Regex(r"(?i)#Pratham"), auto_forward))
 
 
 async def neofetch(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -60,3 +70,4 @@ async def auto_forward(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 Help.register_help("magisk", "Get the links to latest magisk apks.")
 Help.register_help("neofetch", "Run neofetch")
+Help.register_help("toggleautoforward", "(For Pratham) Toggle automatic forwarding")

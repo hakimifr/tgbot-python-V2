@@ -1,12 +1,21 @@
 import sys
 import logging
 import subprocess
+import util.module
 from util.help import Help
 from telegram import Update, Message
-from telegram.ext import ContextTypes
+from telegram.ext import ContextTypes, CommandHandler, Application
 
 SAVED_MESSAGE_CHAT_ID = -1001607510711
 log: logging.Logger = logging.getLogger(__name__)
+
+
+class ModuleMetadata(util.module.ModuleMetadata):
+    @classmethod
+    def setup_module(cls, app: Application):
+        app.add_handler(CommandHandler("start", start))
+        app.add_handler(CommandHandler("save", save))
+
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text("A bot written in Python3, by @Hakimi0804.")

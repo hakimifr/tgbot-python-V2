@@ -2,13 +2,14 @@ import os
 import sys
 import logging
 import telegram.error
+import util.module
 
 from time import sleep
 from os import system, execve
 from telegram import Update, Message, InlineKeyboardMarkup, InlineKeyboardButton
 from util.help import Help
 from util.config import Config
-from telegram.ext import CallbackContext, ContextTypes, Application
+from telegram.ext import CallbackContext, CommandHandler, ContextTypes, Application
 from modules.rm6785 import RM6785_MASTER_USER
 log: logging.Logger = logging.getLogger(__name__)
 config: Config = Config("updater.json")
@@ -31,6 +32,12 @@ chat_id: int
 message_id: int
     message_id of the 'Restarting bot' message
 """
+
+
+class ModuleMetadata(util.module.ModuleMetadata):
+    @classmethod
+    def setup_module(cls, app: Application):
+        app.add_handler(CommandHandler("update", update))
 
 
 async def finish_update(app: Application) -> None:

@@ -12,13 +12,26 @@ Available methods:
 import logging
 import random
 import re
+import util.module
 from util.help import Help
 from util.config import Config
 from telegram import Update, Message
-from telegram.ext import ContextTypes
+from telegram.ext import ContextTypes, CommandHandler, Application
 
 log: logging.Logger = logging.getLogger(__name__)
 config: Config = Config("toys.json")
+
+
+class ModuleMetadata(util.module.ModuleMetadata):
+    @classmethod
+    def setup_module(cls, app: Application):
+        app.add_handler(CommandHandler("gay", random_percentage))
+        app.add_handler(CommandHandler("sexy", random_percentage))
+        app.add_handler(CommandHandler("shuffle", shuffle))
+        app.add_handler(CommandHandler("insert", insert))
+        app.add_handler(CommandHandler("add_words", add_words))
+        app.add_handler(CommandHandler("remove_words", remove_words))
+        app.add_handler(CommandHandler("reset_words", reset_words))
 
 
 async def random_percentage(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:

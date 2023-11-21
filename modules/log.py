@@ -1,11 +1,18 @@
 import logging
+import util.module
 from pathlib import Path
 from telegram import Update
 from util.help import Help
-from telegram.ext import ContextTypes
+from telegram.ext import ContextTypes, CommandHandler, Application
 from modules.rm6785 import RM6785_MASTER_USER
 log: logging.Logger = logging.getLogger(__name__)
 TOKEN: str = Path(".token").read_text()
+
+
+class ModuleMetadata(util.module.ModuleMetadata):
+    @classmethod
+    def setup_module(cls, app: Application):
+        app.add_handler(CommandHandler("getlog", get_log))
 
 
 async def get_log(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:

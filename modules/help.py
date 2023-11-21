@@ -6,10 +6,17 @@ Available methods:
         Sends help message.
 """
 import logging
+import util.module
 from util.help import Help
 from telegram import Update
-from telegram.ext import ContextTypes
+from telegram.ext import ContextTypes, CommandHandler, Application
 log: logging.Logger = logging.getLogger(__name__)
+
+
+class ModuleMetadata(util.module.ModuleMetadata):
+    @classmethod
+    def setup_module(cls, app: Application):
+        app.add_handler(CommandHandler("help", bot_help))
 
 
 async def bot_help(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:

@@ -27,12 +27,35 @@ Available methods:
 import re
 import json
 import logging
+import util.module
 from util.help import Help
 from util.config import Config
 from telegram import Update, Message, MessageId
-from telegram.ext import ContextTypes
+from telegram.ext import ContextTypes, CommandHandler, MessageHandler, filters, Application
 log: logging.Logger = logging.getLogger(__name__)
 config: Config = Config("rm6785_config.json")
+
+
+class ModuleMetadata(util.module.ModuleMetadata):
+    @classmethod
+    def setup_module(cls, app: Application):
+        app.add_handler(CommandHandler("approve", approve))
+        app.add_handler(CommandHandler("disapprove", disapprove))
+        app.add_handler(CommandHandler("post", post))
+        app.add_handler(CommandHandler("sticker", sticker))
+        app.add_handler(CommandHandler("authorize", authorize))
+        app.add_handler(CommandHandler("deauthorize", deauthorize))
+        app.add_handler(CommandHandler("listauth", listauth))
+        app.add_handler(CommandHandler("dumpconfig", dumpconfig))
+        app.add_handler(CommandHandler("loadconfig", loadconfig))
+        app.add_handler(CommandHandler("delchmsg", delchmsg))
+        app.add_handler(CommandHandler("report", report))
+        app.add_handler(MessageHandler(filters.Regex(r"^\.\+1"), approve))
+        app.add_handler(MessageHandler(filters.Regex(r"^\.-1"), disapprove))
+        app.add_handler(MessageHandler(filters.Regex(r"(?i)^\.post"), post))
+        app.add_handler(MessageHandler(filters.Regex(r"(?i)^\.sticker"), sticker))
+        app.add_handler(MessageHandler(filters.Regex(r"(?i)^\.auth"), authorize))
+        app.add_handler(MessageHandler(filters.Regex(r"(?i)^\.deauth"), deauthorize))
 
 
 # Constants

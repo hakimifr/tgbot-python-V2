@@ -1,12 +1,13 @@
 import re
 import logging
+import util.module
 import telegram
 import telegram.error
 from util.help import Help
 from util.config import Config
 from modules.rm6785 import RM6785_MASTER_USER
 from telegram import Update
-from telegram.ext import ContextTypes
+from telegram.ext import ContextTypes, CommandHandler, MessageHandler, Application, filters
 log: logging.Logger = logging.getLogger(__name__)
 
 config: Config = Config("sticker-blocklist.json")
@@ -14,6 +15,18 @@ if config.config.get("blocklist") is None:
     config.config["blocklist"] = []
 if config.config.get("gif_blocklist") is None:
     config.config["gif_blocklist"] = []
+
+
+class ModuleMetadata(util.module.ModuleMetadata):
+    @classmethod
+    def setup_module(cls, app: Application):
+        app.add_handler(CommandHandler("block", block_unblock))
+        app.add_handler(CommandHandler("unblock", block_unblock))
+        app.add_handler(CommandHandler("gblock", gblock_gunblock))
+        app.add_handler(CommandHandler("gunblock", gblock_gunblock))
+        app.add_handler(CommandHandler("listblocklist", list_blocklist))
+        app.add_handler(MessageHandler(filters.Sticker.ALL, blocker))
+        app.add_handler(MessageHandler(filters.ANIMATION, blocker))
 
 
 async def blocker(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
