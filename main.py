@@ -66,7 +66,8 @@ async def callback(update: Update, context: CallbackContext) -> None:
 app.add_handler(CallbackQueryHandler(callback))
 
 # Load modules
-mdls = Path("modules").glob("*.py")
+mdls = tuple(Path("modules").glob("*.py"))
+log.info(f"Modules found: {mdls}")
 for mdl in mdls:
     mod: object = import_module("modules." + mdl.name.removesuffix(".py"))
 
