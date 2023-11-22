@@ -9,7 +9,7 @@ from telegram import Update
 from telegram.ext import ContextTypes, CommandHandler, MessageHandler, filters, Application
 
 main_log: logging.Logger = logging.getLogger(__file__)
-auto_forward_state: bool = True
+auto_forward_state: bool = False
 
 
 class ModuleMetadata(util.module.ModuleMetadata):
