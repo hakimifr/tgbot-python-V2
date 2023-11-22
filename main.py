@@ -48,10 +48,6 @@ log.info("Starting bot startup timer")
 import_start_time = time.time()
 import modules.updater
 
-# After these modules registers their help, we can update telegram commands and description.
-if Help.cmd_update_pending:
-    Help.update_bot_cmd()
-
 # TODO: Implement these modules (ref: github.com/Hakimi0804/tgbot-fish)
 # import modules.spam_protect     # Prevent spammers in groups
 # import modules.moderation       # /ban, /kick, etc
@@ -90,6 +86,10 @@ for mdl in mdls:
         log.warning(f"Error while running setup_module() for module '{mdl}', module may not work properly.")
         log.warning(f"More info: {e}")
 
+
+# After these modules registers their help, we can update telegram commands and description.
+if Help.cmd_update_pending:
+    Help.update_bot_cmd()
 
 log.info(f"Bot startup took {(time.time() - import_start_time):.1f}s")
 app.run_polling()
