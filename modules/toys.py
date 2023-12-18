@@ -35,12 +35,9 @@ class ModuleMetadata(util.module.ModuleMetadata):
 
 
 async def random_percentage(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    if update.message.reply_to_message is not None:
-        user: str = update.message.reply_to_message.from_user.first_name
-        user_id: int = update.message.reply_to_message.from_user.id
-    else:
-        user: str = update.message.from_user.first_name
-        user_id: int = update.message.from_user.id
+    type_: str
+    user: str
+    rand_percent: int
 
     # Check type, whether sexy or gay
     if re.match(r"^/gay", update.message.text):
@@ -50,9 +47,14 @@ async def random_percentage(update: Update, context: ContextTypes.DEFAULT_TYPE) 
     ret: Message = await update.message.reply_text(f"Calculating {type_}ness...")
 
     if type_ == "gay":
-        rand_percent: int = random.randint(0, 10) if user_id == 1024853832 else random.randint(80, 150)
+        rand_percent: int = random.randint(10, 100)
     elif type_ == "sexy":
-        rand_percent: int = random.randint(80, 150) if user_id == 1024853832 else random.randint(-50, 50)
+        rand_percent: int = random.randint(-50, 100)
+
+    if update.message.reply_to_message is not None:
+        user: str = update.message.reply_to_message.from_user.first_name
+    else:
+        user: str = update.message.from_user.first_name
 
     await ret.edit_text(f"{user} is {rand_percent}% {type_}")
 
