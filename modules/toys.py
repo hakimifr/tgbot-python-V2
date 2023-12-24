@@ -9,6 +9,7 @@ Available methods:
         shuffle a sentence.
 """
 
+import inspect
 import logging
 import random
 import re
@@ -17,6 +18,7 @@ from util.help import Help
 from util.config import Config
 from telegram import Update, Message
 from telegram.ext import ContextTypes, CommandHandler, Application
+from telegram.helpers import escape_markdown
 
 log: logging.Logger = logging.getLogger(__name__)
 config: Config = Config("toys.json")
@@ -32,6 +34,7 @@ class ModuleMetadata(util.module.ModuleMetadata):
         app.add_handler(CommandHandler("add_words", add_words))
         app.add_handler(CommandHandler("remove_words", remove_words))
         app.add_handler(CommandHandler("reset_words", reset_words))
+        app.add_handler(CommandHandler("about_random_percentage", about_random_percentage))
 
 
 async def random_percentage(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -59,6 +62,12 @@ async def random_percentage(update: Update, context: ContextTypes.DEFAULT_TYPE) 
     await ret.edit_text(f"{user} is {rand_percent}% {type_}")
 
 
+async def about_random_percentage(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("Source code:\n```python\n"
+                                    + escape_markdown(inspect.getsource(random_percentage))
+                                    + "\n```", parse_mode="MarkdownV2")
+
+
 async def shuffle(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if update.message.reply_to_message is None:
         await update.message.reply_text("You must reply to a message.")
@@ -73,6 +82,7 @@ async def shuffle(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
 Help.register_help("gay", "Return gayness level of you/replied user.")
 Help.register_help("sexy", "Return sexiness level of you/replied user.")
+Help.register_help("about_random_percentage", "Return source code used for generating /gay and /sexy response.")
 Help.register_help("shuffle", "Shuffle replied message.")
 
 
