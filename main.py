@@ -4,6 +4,8 @@ import os
 import time
 import logging
 
+import util.config_backuprestore
+
 from importlib import import_module
 from pathlib import Path
 
@@ -47,6 +49,9 @@ from util.help import Help
 
 log.info("Starting bot startup timer")
 import_start_time = time.time()
+
+util.config_backuprestore.fetch_file()
+
 import modules.updater
 
 # TODO: Implement these modules (ref: github.com/Hakimi0804/tgbot-fish)
