@@ -11,3 +11,6 @@ api_token.py
 
 # Config files
 *.json
+
+# PyCharm
+.idea/
