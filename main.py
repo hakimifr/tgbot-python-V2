@@ -24,6 +24,7 @@ logging.basicConfig(format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
 log = logging.getLogger(__name__)
 
 from telegram import Update
+from telegram.error import TimedOut
 from telegram.ext import (
     ApplicationBuilder,
     CommandHandler,
@@ -89,8 +90,18 @@ for mdl in mdls:
 
 
 # After these modules registers their help, we can update telegram commands and description.
+log.info("Updating bot commands...")
 if Help.cmd_update_pending:
-    Help.update_bot_cmd()
+    try:
+        Help.update_bot_cmd()
+        log.info("Command update successful")
+    except TimedOut:
+        # Retry one more time because railway moment
+        try:
+            Help.update_bot_cmd()
+            log.info("Command update successful")
+        except TimedOut as e:
+            log.error(f"Failed to update bot command, cause: {e}")
 
 log.info(f"Bot startup took {(time.time() - import_start_time):.1f}s")
 app.run_polling()
