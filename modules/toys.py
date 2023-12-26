@@ -18,7 +18,7 @@ import util.module
 from util.help import Help
 from util.config import Config
 from telegram import Update, Message
-from telegram.ext import ContextTypes, CommandHandler, Application
+from telegram.ext import ContextTypes, CommandHandler, Application, CallbackContext
 from telegram.helpers import escape_markdown
 
 log: logging.Logger = logging.getLogger(__name__)
@@ -50,6 +50,14 @@ async def random_percentage(update: Update, context: ContextTypes.DEFAULT_TYPE) 
         type_: str = "sexy"
     ret: Message = await update.message.reply_text(f"Calculating {type_}ness...")
 
+    if update.message.reply_to_message is not None:
+        user: str = update.message.reply_to_message.from_user.first_name
+        context: CallbackContext = CallbackContext(context.application,
+                                                   update.message.chat_id,
+                                                   update.message.reply_to_message.from_user.id)
+    else:
+        user: str = update.message.from_user.first_name
+
     if type_ == "gay":
         if 'gei_percent' in context.user_data and datetime.datetime.now(datetime.UTC).date() == context.user_data[
                                                                                                 "gei_number_date"]:
@@ -66,11 +74,6 @@ async def random_percentage(update: Update, context: ContextTypes.DEFAULT_TYPE) 
             rand_percent: int = random.randint(-50, 100)
             context.user_data['semx_percent'] = rand_percent
             context.user_data['semx_number_date'] = datetime.datetime.now(datetime.UTC).date()
-
-    if update.message.reply_to_message is not None:
-        user: str = update.message.reply_to_message.from_user.first_name
-    else:
-        user: str = update.message.from_user.first_name
 
     await ret.edit_text(f"Today {user} is {rand_percent}% {type_}")
 
