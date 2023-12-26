@@ -13,6 +13,7 @@ import inspect
 import logging
 import random
 import re
+import datetime
 import util.module
 from util.help import Help
 from util.config import Config
@@ -50,16 +51,28 @@ async def random_percentage(update: Update, context: ContextTypes.DEFAULT_TYPE) 
     ret: Message = await update.message.reply_text(f"Calculating {type_}ness...")
 
     if type_ == "gay":
-        rand_percent: int = random.randint(10, 100)
+        if 'gei_percent' in context.user_data and datetime.datetime.now(datetime.UTC).date() == context.user_data[
+                                                                                                "gei_number_date"]:
+            rand_percent = context.user_data['gei_percent']
+        else:
+            rand_percent: int = random.randint(10, 100)
+            context.user_data['gei_percent'] = rand_percent
+            context.user_data['gei_number_date'] = datetime.datetime.now(datetime.UTC).date()
     elif type_ == "sexy":
-        rand_percent: int = random.randint(-50, 100)
+        if 'semx_percent' in context.user_data and datetime.datetime.now(datetime.UTC).date() == context.user_data[
+                                                                                                "semx_number_date"]:
+            rand_percent = context.user_data['semx_percent']
+        else:
+            rand_percent: int = random.randint(-50, 100)
+            context.user_data['semx_percent'] = rand_percent
+            context.user_data['semx_number_date'] = datetime.datetime.now(datetime.UTC).date()
 
     if update.message.reply_to_message is not None:
         user: str = update.message.reply_to_message.from_user.first_name
     else:
         user: str = update.message.from_user.first_name
 
-    await ret.edit_text(f"{user} is {rand_percent}% {type_}")
+    await ret.edit_text(f"Today {user} is {rand_percent}% {type_}")
 
 
 async def about_random_percentage(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -109,7 +122,8 @@ async def insert(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     insert_words: list[str] = config.config.get("insert_words")
     input_words: list[str] = update.message.reply_to_message.text.split(" ")
     random_words: list[str] = random.choices(insert_words,
-                                             k=len(input_words) if len(input_words) <= len(insert_words) else len(insert_words))  # noqa: E501
+                                             k=len(input_words) if len(input_words) <= len(insert_words) else len(
+                                                 insert_words))  # noqa: E501
 
     reply_words: list[str] = random_words + input_words
     random.shuffle(reply_words)
