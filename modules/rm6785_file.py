@@ -44,11 +44,10 @@ async def expdbreader(update: Update, context: ContextTypes.DEFAULT_TYPE):
     log.info(f"File size is: {update.message.document.file_size}")
 
     pattern = r"TP|DISP"
-    trigger_file_names: list[str] = ["expdb"]
     expdb_tempf: NamedTemporaryFile = NamedTemporaryFile()
     strings_tempf: NamedTemporaryFile = NamedTemporaryFile()
     grepped_tempf: NamedTemporaryFile = NamedTemporaryFile()
-    if update.message.document.file_name not in trigger_file_names:
+    if not re.match(r"expdb.*", update.message.document.file_name):
         return
     if update.effective_chat.id != RM6785_DEVELOPMENT_CHAT_ID:
         return
