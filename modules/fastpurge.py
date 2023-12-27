@@ -44,16 +44,18 @@ async def fastpurge(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not update.message.reply_to_message:
         await update.message.reply_text("Reply to a message smh")
         return
+
+    message = await update.message.reply_text("Checking admin status")
     admins = await update.effective_chat.get_administrators()
     log.info(f"Chat admins: {admins}")
     if not any(update.effective_user.id == admin.user.id for admin in admins):
-        await update.message.reply_text("You're not admin smh")
+        await message.edit_text("You're not admin smh")
         return
     if not any(update.get_bot().id == admin.user.id for admin in admins):
-        await update.message.reply_text("I'm not admin smh")
+        await message.edit_text("I'm not admin smh")
         return
 
-    message = await update.message.reply_text(f"Purging {update.message.id - update.message.reply_to_message.id} messages")
+    await message.edit_text(f"Purging {update.message.id - update.message.reply_to_message.id} messages")
     purge_start_time = time.time()
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=30) as executor:
