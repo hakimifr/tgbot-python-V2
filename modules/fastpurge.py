@@ -58,7 +58,7 @@ async def fastpurge(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await message.edit_text(f"Purging {update.message.id - update.message.reply_to_message.id} messages")
     purge_start_time = time.time()
 
-    with concurrent.futures.ThreadPoolExecutor(max_workers=30) as executor:
+    with concurrent.futures.ThreadPoolExecutor(max_workers=100) as executor:
         for message_id in range(update.message.reply_to_message.id, update.message.id + 1):
             executor.submit(purge, update.effective_chat.id, message_id)
 
