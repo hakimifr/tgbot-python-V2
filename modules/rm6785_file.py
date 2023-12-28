@@ -16,21 +16,24 @@ from telegram.ext import ContextTypes, Application, MessageHandler, filters
 
 log: logging.Logger = logging.getLogger(__name__)
 
+# Based on https://github.com/AgentFabulous/mtk-expdb-extract
+def extract_expdb(expdb, out):
+    f = open(expdb, 'r', encoding='ISO-8859-1')
+    lines = f.readlines()
+    dumps = []
+    dump = {
+        'pl_lk': [],
+    }
 
-# https://stackoverflow.com/questions/17195924/python-equivalent-of-unix-strings-utility
-def strings(filename, min=4) -> Generator:
-    with open(filename, errors="ignore") as f:  # Python 3.x
-        result = ""
-        for c in f.read():
-            if c in string.printable:
-                result += c
-                continue
-            if len(result) >= min:
-                yield result
-            result = ""
-        if len(result) >= min:  # catch result at EOF
-            yield result
+    for line in lines:
+        if "Preloader Start" in line:
+            if dump['pl_lk']:
+                dumps.append(dump)
+            dump = {'pl_lk': []}
+        dump['pl_lk'].append(line)
 
+    with open(out, 'w', encoding='ISO-8859-1') as f:
+        f.writelines(dumps[len(dumps) - 1]['pl_lk'])
 
 class ModuleMetadata(module.ModuleMetadata):
     @classmethod
@@ -43,10 +46,8 @@ async def expdbreader(update: Update, context: ContextTypes.DEFAULT_TYPE):
     log.info(f"File name is: {update.message.document.file_name}")
     log.info(f"File size is: {update.message.document.file_size}")
 
-    pattern = r"TP|DISP"
     expdb_tempf: NamedTemporaryFile = NamedTemporaryFile()
-    strings_tempf: NamedTemporaryFile = NamedTemporaryFile()
-    grepped_tempf: NamedTemporaryFile = NamedTemporaryFile()
+    out_tempf: NamedTemporaryFile = NamedTemporaryFile()
     if not re.match(r"expdb.*", update.message.document.file_name):
         return
     if update.effective_chat.id != RM6785_DEVELOPMENT_CHAT_ID:
@@ -57,27 +58,10 @@ async def expdbreader(update: Update, context: ContextTypes.DEFAULT_TYPE):
     file: telegram.File = await update.message.document.get_file()
     await file.download_to_drive(custom_path=expdb_tempf.name)
 
-    with open(strings_tempf.name, "w") as f:
-        f.write("\n".join(strings(expdb_tempf.name)))
-    await message.reply_document(strings_tempf, caption="strings-ed.")
-
-    await message.edit_text(f"grepping, pattern: '{pattern}'")
-    lines: list[str] = []
-    for line in strings(expdb_tempf.name):
-        new_lines = line.split("\n")
-        lines = [*lines, *new_lines]
-
-    grepped: Generator[list[str]] = filter(lambda line: re.search(pattern, line), lines)
-
-    with open(grepped_tempf.name, "w") as f:
-        f.write("\n".join(grepped))
-
-    await message.edit_text("Done, uploading")
-    await message.reply_document(grepped_tempf.name, caption=f"Grepped with pattern: '{pattern}'")
-    await message.edit_text("Done")
+    extract_expdb(expdb_tempf.name, out_tempf.name)
+    await message.reply_document(out_tempf.name, caption="Trimmed latest dump")
 
     expdb_tempf.close()
-    grepped_tempf.close()
-
+    out_tempf.close()
     assert expdb_tempf.closed
-    assert grepped_tempf.closed
+    assert out_tempf.closed
