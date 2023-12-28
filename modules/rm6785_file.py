@@ -32,10 +32,15 @@ def extract_expdb(expdb, out):
             dump = {'pl_lk': []}
         dump['pl_lk'].append(line)
 
-    pl_lk_stripped = [i.replace('\x00', '') for i in dumps[-1]['pl_lk']]
+    try:
+        pl_lk_stripped = [i.replace('\x00', '') for i in dumps[-1]['pl_lk']]
 
-    with open(out, 'w', encoding='ISO-8859-1') as f:
-        f.writelines(''.join(pl_lk_stripped))
+        with open(out, 'w', encoding='ISO-8859-1') as f:
+            f.writelines(''.join(pl_lk_stripped))
+
+        return True
+    except:
+        return False
 
 class ModuleMetadata(module.ModuleMetadata):
     @classmethod
@@ -56,12 +61,15 @@ async def expdbreader(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     # Download the file
-    message = await update.message.reply_text("expdb!!, Downloading")
+    message = await update.message.reply_text("Found expdb!!")
     file: telegram.File = await update.message.document.get_file()
     await file.download_to_drive(custom_path=expdb_tempf.name)
 
-    extract_expdb(expdb_tempf.name, out_tempf.name)
-    await message.reply_document(out_tempf.name, caption="Trimmed latest dump")
+    if extract_expdb(expdb_tempf.name, out_tempf.name):
+        await message.edit_text("Successfully trimmed the expdb dump")
+        await message.reply_document(out_tempf.name, caption="Trimmed latest dump")
+    else:
+        await message.edit_text("Failed to trim the expdb dump")
 
     expdb_tempf.close()
     out_tempf.close()
