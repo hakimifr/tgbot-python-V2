@@ -32,8 +32,10 @@ def extract_expdb(expdb, out):
             dump = {'pl_lk': []}
         dump['pl_lk'].append(line)
 
+    pl_lk_stripped = [i.replace('\x00', '') for i in dumps[-1]['pl_lk']]
+
     with open(out, 'w', encoding='ISO-8859-1') as f:
-        f.writelines(dumps[len(dumps) - 1]['pl_lk'])
+        f.writelines(''.join(pl_lk_stripped))
 
 class ModuleMetadata(module.ModuleMetadata):
     @classmethod
