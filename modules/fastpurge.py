@@ -2,11 +2,11 @@ import os
 import time
 import asyncio
 import logging
-import concurrent.futures
 
 import telegram.error
 
 from util import module
+from util.help import Help
 
 from telegram import Update, Bot
 from telegram.ext import Application, ContextTypes, CommandHandler
@@ -29,10 +29,10 @@ except ImportError:
         TOKEN_OK = False
 
 
-def purge(chat_id, message_id) -> None:
+async def delete_message(chat_id, message_id) -> None:
     bot = Bot(TOKEN)
     try:
-        asyncio.run(bot.delete_message(chat_id, message_id))
+        await bot.delete_message(chat_id, message_id)
     except telegram.error.TelegramError as e:
         log.error(f"Failed to purge message:: chat_id:{chat_id} message_id: {message_id}")
         log.error(f"caused by: {e}")
@@ -58,9 +58,18 @@ async def fastpurge(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await message.edit_text(f"Purging {update.message.id - update.message.reply_to_message.id} messages")
     purge_start_time = time.time()
 
-    with concurrent.futures.ThreadPoolExecutor(max_workers=100) as executor:
-        for message_id in range(update.message.reply_to_message.id, update.message.id + 1):
-            executor.submit(purge, update.effective_chat.id, message_id)
+    purge_tasks: list[asyncio.Task] = []
+    for message_id in range(update.message.reply_to_message.id, update.message.id + 1):
+        # noinspection PyAsyncCall
+        purge_tasks.append(asyncio.create_task(delete_message(chat_id=update.message.chat_id, message_id=message_id)))
+
+    for task in purge_tasks:
+        # Otherwise purge_end_time will be wrong since the block will exit
+        # before all tasks are finished.
+        await task
 
     purge_end_time = time.time()
-    await message.edit_text(f"Purged {update.message.id - update.message.reply_to_message.id} in {purge_end_time - purge_start_time:.2f}")
+    await message.edit_text(f"Purged {update.message.id - update.message.reply_to_message.id} in {purge_end_time - purge_start_time:.3f}")
+
+
+Help.register_help("fastpurge", "Purge message with insane speed")
