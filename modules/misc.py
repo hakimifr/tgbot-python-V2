@@ -15,10 +15,10 @@ auto_forward_state: bool = False
 class ModuleMetadata(util.module.ModuleMetadata):
     @classmethod
     def setup_module(cls, app: Application):
-        app.add_handler(CommandHandler("neofetch", neofetch))
-        app.add_handler(CommandHandler("magisk", magisk))
-        app.add_handler(CommandHandler("toggleautoforward", toggle_auto_forward))
-        app.add_handler(MessageHandler(filters.Regex(r"(?i)#Pratham"), auto_forward))
+        app.add_handler(CommandHandler("neofetch", neofetch, block=False))
+        app.add_handler(CommandHandler("magisk", magisk, block=False))
+        app.add_handler(CommandHandler("toggleautoforward", toggle_auto_forward, block=False))
+        app.add_handler(MessageHandler(filters.Regex(r"(?i)#Pratham"), auto_forward, block=False))
 
 
 async def neofetch(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:

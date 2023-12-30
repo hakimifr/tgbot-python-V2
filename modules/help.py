@@ -16,7 +16,7 @@ log: logging.Logger = logging.getLogger(__name__)
 class ModuleMetadata(util.module.ModuleMetadata):
     @classmethod
     def setup_module(cls, app: Application):
-        app.add_handler(CommandHandler("help", bot_help))
+        app.add_handler(CommandHandler("help", bot_help, block=False))
 
 
 async def bot_help(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:

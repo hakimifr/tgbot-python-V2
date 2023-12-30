@@ -20,13 +20,13 @@ if config.config.get("gif_blocklist") is None:
 class ModuleMetadata(util.module.ModuleMetadata):
     @classmethod
     def setup_module(cls, app: Application):
-        app.add_handler(CommandHandler("block", block_unblock))
-        app.add_handler(CommandHandler("unblock", block_unblock))
-        app.add_handler(CommandHandler("gblock", gblock_gunblock))
-        app.add_handler(CommandHandler("gunblock", gblock_gunblock))
-        app.add_handler(CommandHandler("listblocklist", list_blocklist))
-        app.add_handler(MessageHandler(filters.Sticker.ALL, blocker))
-        app.add_handler(MessageHandler(filters.ANIMATION, blocker))
+        app.add_handler(CommandHandler("block", block_unblock, block=False))
+        app.add_handler(CommandHandler("unblock", block_unblock, block=False))
+        app.add_handler(CommandHandler("gblock", gblock_gunblock, block=False))
+        app.add_handler(CommandHandler("gunblock", gblock_gunblock, block=False))
+        app.add_handler(CommandHandler("listblocklist", list_blocklist, block=False))
+        app.add_handler(MessageHandler(filters.Sticker.ALL, blocker, block=False))
+        app.add_handler(MessageHandler(filters.ANIMATION, blocker, block=False))
 
 
 async def blocker(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:

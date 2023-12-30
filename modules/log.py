@@ -12,7 +12,7 @@ TOKEN: str = Path(".token").read_text()
 class ModuleMetadata(util.module.ModuleMetadata):
     @classmethod
     def setup_module(cls, app: Application):
-        app.add_handler(CommandHandler("getlog", get_log))
+        app.add_handler(CommandHandler("getlog", get_log, block=False))
 
 
 async def get_log(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:

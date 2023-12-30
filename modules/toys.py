@@ -28,14 +28,14 @@ config: Config = Config("toys.json")
 class ModuleMetadata(util.module.ModuleMetadata):
     @classmethod
     def setup_module(cls, app: Application):
-        app.add_handler(CommandHandler("gay", random_percentage))
-        app.add_handler(CommandHandler("sexy", random_percentage))
-        app.add_handler(CommandHandler("shuffle", shuffle))
-        app.add_handler(CommandHandler("insert", insert))
-        app.add_handler(CommandHandler("add_words", add_words))
-        app.add_handler(CommandHandler("remove_words", remove_words))
-        app.add_handler(CommandHandler("reset_words", reset_words))
-        app.add_handler(CommandHandler("about_random_percentage", about_random_percentage))
+        app.add_handler(CommandHandler("gay", random_percentage, block=False))
+        app.add_handler(CommandHandler("sexy", random_percentage, block=False))
+        app.add_handler(CommandHandler("shuffle", shuffle, block=False))
+        app.add_handler(CommandHandler("insert", insert, block=False))
+        app.add_handler(CommandHandler("add_words", add_words, block=False))
+        app.add_handler(CommandHandler("remove_words", remove_words, block=False))
+        app.add_handler(CommandHandler("reset_words", reset_words, block=False))
+        app.add_handler(CommandHandler("about_random_percentage", about_random_percentage, block=False))
 
 
 async def random_percentage(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:

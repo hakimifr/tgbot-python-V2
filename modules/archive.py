@@ -19,8 +19,8 @@ log: logging.Logger = logging.getLogger(__name__)
 class ModuleMetadata(util.module.ModuleMetadata):
     @classmethod
     def setup_module(cls, app: Application):
-        app.add_handler(CommandHandler("unzip", unzip))
-        app.add_handler(CommandHandler("unzipl", unzip))
+        app.add_handler(CommandHandler("unzip", unzip, block=False))
+        app.add_handler(CommandHandler("unzipl", unzip, block=False))
 
 
 async def extract_zip(file: telegram.File, entry_list: list[str] | None,  # type: ignore

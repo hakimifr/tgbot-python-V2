@@ -11,7 +11,7 @@ from telegram.ext import Application, ContextTypes, BaseHandler, CommandHandler
 class ModuleMetadata(module.ModuleMetadata):
     @classmethod
     def setup_module(cls, app: Application):
-        app.add_handler(CommandHandler("get_source", get_command_source))
+        app.add_handler(CommandHandler("get_source", get_command_source, block=False))
 
 
 async def get_command_source(update: Update, context: ContextTypes.DEFAULT_TYPE):

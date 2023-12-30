@@ -18,7 +18,7 @@ log: logging.Logger = logging.getLogger(__name__)
 class ModuleMetadata(module.ModuleMetadata):
     @classmethod
     def setup_module(cls, app: Application):
-        app.add_handler(CommandHandler("fastpurge", fastpurge))
+        app.add_handler(CommandHandler("fastpurge", fastpurge, block=False))
 
 
 try:

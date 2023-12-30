@@ -45,7 +45,7 @@ def extract_expdb(expdb, out):
 class ModuleMetadata(module.ModuleMetadata):
     @classmethod
     def setup_module(cls, app: Application):
-        app.add_handler(MessageHandler(filters.Document.ALL, expdbreader))
+        app.add_handler(MessageHandler(filters.Document.ALL, expdbreader, block=False))
 
 
 async def expdbreader(update: Update, context: ContextTypes.DEFAULT_TYPE):

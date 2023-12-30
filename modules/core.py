@@ -13,8 +13,8 @@ log: logging.Logger = logging.getLogger(__name__)
 class ModuleMetadata(util.module.ModuleMetadata):
     @classmethod
     def setup_module(cls, app: Application):
-        app.add_handler(CommandHandler("start", start))
-        app.add_handler(CommandHandler("save", save))
+        app.add_handler(CommandHandler("start", start, block=False))
+        app.add_handler(CommandHandler("save", save, block=False))
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:

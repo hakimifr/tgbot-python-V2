@@ -23,7 +23,7 @@ COMPLETION_SETTINGS: dict = {
 class ModuleMetadata(util.module.ModuleMetadata):
     @classmethod
     def setup_module(cls, app: Application):
-        app.add_handler(CommandHandler("gpt3", gpt3))
+        app.add_handler(CommandHandler("gpt3", gpt3, block=False))
 
 
 try:
