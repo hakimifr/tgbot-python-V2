@@ -65,11 +65,11 @@ app = ApplicationBuilder().token(TOKEN) \
 
 
 async def callback(update: Update, context: CallbackContext) -> None:
-    if update.callback_query.data == f"{modules.updater.name}:confirm_update":
-        await modules.updater.confirm_update(update, context)
+    await modules.updater.confirm_update(update, context)
 
 
-app.add_handler(CallbackQueryHandler(callback))
+app.add_handler(CallbackQueryHandler(callback, pattern=lambda data: data == f"{modules.updater.name}:confirm_update",
+                                     block=False))
 
 # Load modules
 mdls = tuple(Path("modules").glob("*.py"))
