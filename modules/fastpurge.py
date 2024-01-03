@@ -30,7 +30,7 @@ except ImportError:
 
 
 async def delete_message(chat_id, message_id) -> None:
-    bot = Bot(TOKEN)
+    bot = Bot(TOKEN)  # pyright: ignore
     try:
         await bot.delete_message(chat_id, message_id)
     except telegram.error.TelegramError as e:

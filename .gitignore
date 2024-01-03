@@ -11,6 +11,8 @@ api_token.py
 
 # Config files
 *.json
+# ... except pyright
+!pyrightconfig.json
 
 # PyCharm
 .idea/
