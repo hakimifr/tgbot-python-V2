@@ -63,10 +63,9 @@ async def fastpurge(update: Update, context: ContextTypes.DEFAULT_TYPE):
         # noinspection PyAsyncCall
         purge_tasks.append(asyncio.create_task(delete_message(chat_id=update.message.chat_id, message_id=message_id)))
 
-    for task in purge_tasks:
-        # Otherwise purge_end_time will be wrong since the block will exit
-        # before all tasks are finished.
-        await task
+    # Otherwise purge_end_time will be wrong since the block will exit
+    # before all tasks are finished.
+    await asyncio.wait(purge_tasks)
 
     purge_end_time = time.time()
     await message.edit_text(f"Purged {update.message.id - update.message.reply_to_message.id} in {purge_end_time - purge_start_time:.3f}")
