@@ -7,6 +7,7 @@ from util.help import Help
 from util.config import Config
 from telegram import Update
 from telegram.ext import ContextTypes, CommandHandler, MessageHandler, filters, Application
+from telegram.helpers import escape_markdown
 
 main_log: logging.Logger = logging.getLogger(__file__)
 auto_forward_state: bool = False
@@ -23,7 +24,9 @@ class ModuleMetadata(util.module.ModuleMetadata):
 
 async def neofetch(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     output: bytes = subprocess.check_output(["bin/neofetch", "--stdout"] + context.args)
-    await update.message.reply_text(output.decode(sys.stdout.encoding))
+    await update.message.reply_text("```\n"
+                                    + escape_markdown(output.decode(sys.stdout.encoding))
+                                    + "\n```", parse_mode="MarkdownV2")
 
 
 async def magisk(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
