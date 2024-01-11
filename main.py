@@ -4,8 +4,6 @@ import os
 import time
 import logging
 
-import util.config_backuprestore
-
 from importlib import import_module
 from pathlib import Path
 
@@ -24,6 +22,8 @@ logging.basicConfig(format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
                     level=logging.INFO,
                     **log_additional_args)
 log = logging.getLogger(__name__)
+
+import util.config_backuprestore
 
 from telegram import Update
 from telegram.error import TimedOut
