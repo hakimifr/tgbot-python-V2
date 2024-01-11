@@ -16,6 +16,9 @@ log: logging.Logger = logging.getLogger(__name__)
 
 try:
     from api_token import GITHUB_TOKEN
+    if len(GITHUB_TOKEN) == 0:
+        log.warning("GH token from api_token.py is empty... attempting to get from environment variable")
+        raise ImportError
 except ImportError:
     if not (GITHUB_TOKEN := os.getenv("GITHUB_TOKEN")):
         TOKEN_OK = False
