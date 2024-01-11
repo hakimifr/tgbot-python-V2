@@ -83,7 +83,9 @@ for mdl in mdls:
         continue
 
     if not issubclass(mod.ModuleMetadata, ModuleMetadata):
-        log.warning(f"ModuleMetadata of module '{mdl}' is not a subclass of util.ModuleMetadata")
+        log.error(f"ModuleMetadata of module '{mdl}' is not a subclass of util.module.ModuleMetadata")
+        log.error(f"Refusing to load module '{mdl}'")
+        continue
 
     log.debug(f"Running setup_module() for module '{mdl}'")
     try:
