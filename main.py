@@ -3,24 +3,13 @@
 import os
 import time
 import logging
+import util.logging
 
 from importlib import import_module
 from pathlib import Path
 
 from util.module import ModuleMetadata
 
-GLOBAL_DEBUG: bool = False
-if os.getenv("TGBOT_DEBUG") is not None:
-    GLOBAL_DEBUG = True
-
-log_additional_args: dict = {"filename": "bot.log"}
-# Print log to stdout if in debug mode
-if GLOBAL_DEBUG:
-    log_additional_args.clear()
-
-logging.basicConfig(format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
-                    level=logging.INFO,
-                    **log_additional_args)
 log = logging.getLogger(__name__)
 
 import util.config_backuprestore
