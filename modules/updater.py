@@ -16,6 +16,7 @@ config: Config = Config("updater.json")
 name: str = __name__
 """structure of updater.json:
 {
+    should_finish_restart: bool,
     was_updated: bool,
     chat_id: int,
     message_id: int
@@ -38,12 +39,18 @@ class ModuleMetadata(util.module.ModuleMetadata):
     @classmethod
     def setup_module(cls, app: Application):
         app.add_handler(CommandHandler("update", update))
+        app.add_handler(CommandHandler("restart", restart))
 
 
 async def finish_update(app: Application) -> None:
-    if not config.config.get("was_updated", False):
-        log.info("Bot was not updated")
+    if not config.config.get("should_finish_restart", False):
+        log.info("Nothing to do")
         return
+
+    if config.config.get("was_updated", False):
+        log.info("** Bot was updated")
+    else:
+        log.info("** Bot was not updated: Restart for other reason")
 
     try:
         await app.bot.edit_message_text("Bot restarted",
@@ -54,7 +61,6 @@ async def finish_update(app: Application) -> None:
         log.error("Logging traceback.")
         log.error(f"{e}")
 
-    log.info("Bot was updated")
     config.config = {}
     config.write_config()
 
@@ -95,6 +101,7 @@ async def update_start(update: Update, context: CallbackContext) -> None:
     log.info("Restarting bot")
 
     config.config = {
+        "should_finish_restart": True,
         "was_updated": True,
         "chat_id": update.callback_query.message.chat_id,
         "message_id": update.callback_query.message.id
@@ -111,4 +118,29 @@ async def update_start(update: Update, context: CallbackContext) -> None:
     execve(sys.executable, [sys.executable, *sys.argv], os.environ)
 
 
+async def restart(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.message.from_user.id not in RM6785_MASTER_USER:
+        await update.message.reply_text("You're not allowed to use this command")
+        return
+
+    message = await update.message.reply_text("Restarting")
+
+    await context.application.updater._stop_polling()
+    try:
+        await update.get_bot().get_updates(offset=update.update_id + 1)
+    except telegram.error.TimedOut:
+        pass
+
+    config.config = {
+        "should_finish_restart": True,
+        "was_updated": False,
+        "chat_id": update.message.chat.id,
+        "message_id": message.id
+    }
+    config.write_config()
+
+    execve(sys.executable, [sys.executable, *sys.argv], os.environ)
+
+
 Help.register_help("update", "Update and restart the bot.")
+Help.register_help("restart", "Restart the bot")
