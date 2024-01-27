@@ -27,6 +27,7 @@ except ImportError:
 gh = github.Github(GITHUB_TOKEN)
 gist = gh.get_gist(GIST_ID)
 session: requests.Session = requests.Session()
+blacklisted_configs = ["updater.json"]
 
 
 def fetch_file():
@@ -34,6 +35,10 @@ def fetch_file():
         return
 
     for file, file_metadata in gist.files.items():
+        if file in blacklisted_configs:
+            log.warning(f"Skipping blacklisted config file: '{file}'")
+            continue
+
         log.info(f"Fetch config file: '{file}'")
         log.debug(str(dict(file_metadata.raw_data)))
 
@@ -51,6 +56,10 @@ def backup_file():
 
     files = pathlib.Path(".").rglob("*.json")
     for file in files:
+        if file in blacklisted_configs:
+            log.warning(f"Skipping blacklisted config file: '{file}'")
+            continue
+
         log.info(f"Backing up config file: '{file.name}'")
         with open(file, "r") as f:
             content = f.read()
