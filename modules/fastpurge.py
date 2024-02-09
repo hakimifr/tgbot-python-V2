@@ -29,16 +29,6 @@ except ImportError:
         TOKEN_OK = False
 
 
-async def delete_message(chat_id, message_id) -> None:
-    bot = Bot(TOKEN)  # pyright: ignore
-    try:
-        await bot.delete_message(chat_id, message_id)
-    except telegram.error.TelegramError as e:
-        log.error(f"Failed to purge message:: chat_id:{chat_id} message_id: {message_id}")
-        log.error(f"caused by: {e}")
-        log.error("")
-
-
 async def fastpurge(update: Update, context: ContextTypes.DEFAULT_TYPE):
     assert TOKEN_OK
     if not update.message.reply_to_message:
@@ -58,14 +48,14 @@ async def fastpurge(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await message.edit_text(f"Purging {update.message.id - update.message.reply_to_message.id} messages")
     purge_start_time = time.time()
 
-    purge_tasks: list[asyncio.Task] = []
-    for message_id in range(update.message.reply_to_message.id, update.message.id + 1):
-        # noinspection PyAsyncCall
-        purge_tasks.append(asyncio.create_task(delete_message(chat_id=update.message.chat_id, message_id=message_id)))
-
-    # Otherwise purge_end_time will be wrong since the block will exit
-    # before all tasks are finished.
-    await asyncio.wait(purge_tasks)
+    message_list: list[int] = [msgid for msgid in range(update.message.reply_to_message.id, update.message.id + 1)]
+    while len(message_list) > 0:
+        if len(message_list) > 100:
+            await update.get_bot().delete_messages(update.effective_chat.id, message_list[:100])
+            message_list = message_list[100:]
+        else:
+            await update.get_bot().delete_messages(update.effective_chat.id, message_list)
+            message_list.clear()
 
     purge_end_time = time.time()
     await message.edit_text(f"Purged {update.message.id - update.message.reply_to_message.id} in {purge_end_time - purge_start_time:.3f}")
