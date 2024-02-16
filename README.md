@@ -10,6 +10,10 @@ This obsoletes the [bot written in fish](https//github.com/Hakimi0804/tgbot-fish
 
 for details on how to make a module for the bot, refer [this](modules/README.md)
 
+## Warnings
+This codebase is pure cancer btw, not that I cannot write clean code, but I'm too
+lazy to do so :p
+
 ## License
 
 This bot is licensed under GPLv3 which means you MUST make all of your changes public.
