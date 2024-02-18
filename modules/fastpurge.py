@@ -34,6 +34,13 @@ log: logging.Logger = logging.getLogger(__name__)
 class ModuleMetadata(module.ModuleMetadata):
     @classmethod
     def setup_module(cls, app: Application):
+        # Guard against bot api lower than 7.0
+        if telegram.__bot_api_version_info__ < (7, 0):
+            log.error("This module requires telegram api 7.0 or higher!")
+            log.error("Please run pip install -r requirements.txt, as PTB version is pinned to 20.8 (bot api 7.0) there")
+            log.error("Refusing to register handlers")
+            return
+
         app.add_handler(CommandHandler("fastpurge", fastpurge, block=False))
         app.add_handler(CommandHandler("anonfastpurge", anonfastpurge, block=False))
 
