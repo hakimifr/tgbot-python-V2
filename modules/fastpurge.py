@@ -108,26 +108,25 @@ async def fastpurge(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("Reply to a message smh")
         return
 
-    message = await update.message.reply_text("Checking admin status")
     admins: tuple[ChatMemberAdministrator] = await update.effective_chat.get_administrators()  # type: ignore
     log.info(f"Chat admins: {admins}")
     if not any(update.effective_user.id == admin.user.id for admin in admins):
-        await message.edit_text("You're not admin smh\n"
-                                "If you are anonymous admin, please use /anonfastpurge\n"
-                                "Technically it can be combined into this command, but this was meant to "
-                                "avoid spamming telegram server, to prevent the bot from getting timed out.")
+        await update.message.reply_text("You're not admin smh\n"
+                                        "If you are anonymous admin, please use /anonfastpurge\n"
+                                        "Technically it can be combined into this command, but this was meant to "
+                                        "avoid spamming telegram server, to prevent the bot from getting timed out.")
         return
     if not any(update.get_bot().id == admin.user.id for admin in admins):
-        await message.edit_text("I'm not admin smh")
+        await update.message.reply_text("I'm not admin smh")
         return
 
-    await message.edit_text(f"Purging {update.message.id - update.message.reply_to_message.id} messages")
+    message = await update.message.reply_text(f"Purging {update.message.id - update.message.reply_to_message.id} messages")
 
     time_taken = await _purge(update.effective_chat.id,
                               update.message.reply_to_message.id,
                               update.message.id,
                               update.get_bot())
-    await message.edit_text(f"Purged {update.message.id - update.message.reply_to_message.id} in {time_taken:.3f}")
+    await message.edit_text(f"Purged {update.message.id - update.message.reply_to_message.id} in {time_taken:.3f}s")
 
 
 async def _purge(chat_id: int, start_message_id: int, end_message_id: int, bot: Bot) -> float:
