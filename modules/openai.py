@@ -18,7 +18,9 @@
 import os
 import time
 import logging
-import openai
+from openai import AsyncOpenAI
+
+aclient = AsyncOpenAI()
 import util.module
 
 from util.help import Help
@@ -44,14 +46,14 @@ class ModuleMetadata(util.module.ModuleMetadata):
 
 
 try:
-    from api_token import OPENAI_API_KEY
+    from api_token import OPENAI_API_KEY  # type: ignore
 except ImportError:
     if not (OPENAI_API_KEY := os.getenv("OPENAI_API_KEY")):
         log.error("Cannot get OpenAI api key; module will be disabled.")
         API_KEY_OK = False
 
 config: Config = Config("openai.json")
-openai.api_key = OPENAI_API_KEY
+aclient.api_key = OPENAI_API_KEY  # type: ignore
 
 if not config.config.get(RESTRICTED_CHATS_KEY):
     config.config[RESTRICTED_CHATS_KEY] = {}
@@ -82,7 +84,7 @@ async def gpt3(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         return
 
     try:
-        aresult = await openai.ChatCompletion.acreate(messages=[
+        aresult = await aclient.chat.completions.create(messages=[
                                                         {
                                                            "role": "user",
                                                            "content": f"{' '.join(context.args)}",
