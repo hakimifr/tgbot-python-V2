@@ -14,11 +14,31 @@
 #
 # Copyright (c) 2024, Firdaus Hakimi <hakimifirdaus944@gmail.com>
 
+import os
+import time
 import json
 import atexit
 import logging
 from pathlib import Path
 log: logging.Logger = logging.getLogger(__name__)
+
+
+def write_lock_file(file: Path) -> None:
+    log.info(f"Creating lock file: '{file.as_posix()}.lock'")
+    with open(f"{file.as_posix()}.lock", "w") as f:
+        f.write(str(os.getpid()))
+
+
+def remove_lock_file(file: Path) -> None:
+    log.info(f"Removing lock file: '{file.as_posix()}.lock'")
+    try:
+        Path(f"{file.as_posix()}.lock").unlink()
+    except FileNotFoundError:
+        log.warning(f"Failed to remove lock file: '{file.as_posix()}.lock'")
+
+
+def is_lock_file_exist(file: Path) -> bool:
+    return Path(f"{file.as_posix()}.lock").exists()
 
 
 class Config:
@@ -39,6 +59,11 @@ class Config:
         # Automatically load config from file if exist
         if Path(self.file).exists() and Path(self.file).is_file():
             self.log(f"Auto-loading config from {self.file} since it exists")
+            if is_lock_file_exist(Path(self.file)):
+                self.log(f"Config file is locked, waiting for it to be unlocked")
+                while is_lock_file_exist(Path(self.file)):
+                    time.sleep(0.1)
+                self.log(f"Config file is unlocked, loading config")
             self.read_config()
         else:
             # Create the file to avoid traceback during read_config() call
@@ -74,6 +99,7 @@ class Config:
         with open(self.file, "w") as config_file:
             json.dump(self.config, config_file, indent=2)
         self.write_pending = False
+        remove_lock_file(Path(self.file))
 
     @_ensure_open
     def read_config(self) -> None:
@@ -90,9 +116,12 @@ class Config:
     def config(self, value) -> None:
         self._config = value
         self.write_pending = True
+        write_lock_file(Path(self.file))
 
     def close(self) -> None:
         self.write_config()
+        self.write_pending = False
+        remove_lock_file(Path(self.file))
         Config.active_config.remove(self.file)
         self.closed = True
 
