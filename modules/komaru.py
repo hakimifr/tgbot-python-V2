@@ -45,8 +45,8 @@ class ModuleMetadata(util.module.ModuleMetadata):
     @classmethod
     def setup_module(cls, app: Application):
         app.add_handler(CommandHandler("toggleupdatekomaru", update_komaru, block=False))
-        app.add_handler(MessageHandler(filters.ANIMATION, komaru_listener, block=False))
-        app.add_handler(MessageHandler(filters.ANIMATION, komaru_channel_listener, block=False))
+        app.add_handler(MessageHandler(filters.ANIMATION, komaru_listener, block=True))
+        app.add_handler(MessageHandler(filters.ANIMATION, komaru_channel_listener, block=True))
 
 
 async def update_komaru(update: Update, context: ContextTypes.DEFAULT_TYPE):
