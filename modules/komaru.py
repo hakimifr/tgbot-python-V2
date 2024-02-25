@@ -45,6 +45,8 @@ class ModuleMetadata(util.module.ModuleMetadata):
     @classmethod
     def setup_module(cls, app: Application):
         app.add_handler(CommandHandler("toggleupdatekomaru", update_komaru, block=False))
+        app.add_handler(CommandHandler("countkomarugifs", count_komaru_gifs, block=False))
+        app.add_handler(CommandHandler("clearkomarudb", clear_db, block=False))
         app.add_handler(MessageHandler(filters.ANIMATION, komaru_listener, block=False))
         app.add_handler(MessageHandler(filters.ANIMATION, komaru_channel_listener, block=False))
 
@@ -97,4 +99,19 @@ async def komaru_channel_listener(update: Update, context: ContextTypes.DEFAULT_
         await msg.delete()
 
 
+async def count_komaru_gifs(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text(f"Number of komaru gifs in database: {len(config.config.keys())}")
+
+
+async def clear_db(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.message.from_user.id not in KOMARU_APPROVED_USERS:
+        await update.message.reply_text("You are not allowed to use this command")
+        return
+
+    config.config.clear()
+    await update.message.reply_text("Database cleared!")
+
+
 Help.register_help("toggleupdatekomaru", "Toggle Komaru updater listener")
+Help.register_help("countkomarugifs", "Count number of komaru gifs in database")
+Help.register_help("clearkomarudb", "Clear komaru gifs database (DANGEROUS)")
