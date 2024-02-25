@@ -20,8 +20,11 @@ import json
 import atexit
 import logging
 from pathlib import Path
+CONFIG_FILE_PATH_PREFIX: str = ""
 log: logging.Logger = logging.getLogger(__name__)
 
+if os.getenv("CONFIG_PERSIST_PARTITION"):
+    CONFIG_FILE_PATH_PREFIX = os.getenv("CONFIG_PERSIST_PARTITION", "")
 
 def write_lock_file(file: Path) -> None:
     log.info(f"Creating lock file: '{file.as_posix()}.lock'")
@@ -50,7 +53,7 @@ class Config:
 
         self.write_pending: bool = False
         self._config: dict = {}
-        self.file: str = file
+        self.file: str = f"{CONFIG_FILE_PATH_PREFIX}/{file}"
         self.closed: bool = False
         self.log = lambda text: log.info(f"[Config: {self.file}] {text}")
 
