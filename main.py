@@ -29,8 +29,6 @@ from util.module import ModuleMetadata
 
 log = logging.getLogger(__name__)
 
-import util.config_backuprestore
-
 from telegram import Update
 from telegram.error import TimedOut
 from telegram.ext import (
@@ -55,8 +53,6 @@ from util.help import Help
 
 log.info("Starting bot startup timer")
 import_start_time = time.time()
-
-util.config_backuprestore.fetch_file()
 
 import modules.updater
 
