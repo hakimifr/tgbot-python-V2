@@ -48,7 +48,6 @@ class ModuleMetadata(util.module.ModuleMetadata):
         app.add_handler(CommandHandler("countkomarugifs", count_komaru_gifs, block=False))
         app.add_handler(CommandHandler("clearkomarudb", clear_db, block=False))
         app.add_handler(MessageHandler(filters.ANIMATION, komaru_listener, block=False))
-        app.add_handler(MessageHandler(filters.ANIMATION, komaru_channel_listener, block=False))
 
 
 async def update_komaru(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -65,6 +64,10 @@ async def update_komaru(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def komaru_listener(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.message.chat_id == KOMARU_CHANNEL_ID:
+        await komaru_channel_listener(update, context)
+        return
+
     if not LISTEN_MODE:
         return
     if update.message.chat_id != LISTEN_CHAT_ID:
