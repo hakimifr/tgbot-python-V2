@@ -64,7 +64,7 @@ async def update_komaru(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def komaru_listener(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if update.message.chat_id == KOMARU_CHANNEL_ID:
+    if update.effective_chat.id == KOMARU_CHANNEL_ID:
         await komaru_channel_listener(update, context)
         return
 
@@ -87,17 +87,14 @@ async def komaru_listener(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def komaru_channel_listener(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if update.message.chat_id != KOMARU_CHANNEL_ID:
-        return
-
-    if update.message.animation.file_unique_id in config.config.keys():
-        await update.message.delete()
+    if update.channel_post.animation.file_unique_id in config.config.keys():
+        await update.channel_post.delete()
     else:
-        config.config[update.message.animation.file_unique_id] = update.message.animation.file_id
-        msg = await update.message.reply_text(f"Added to database!\n"
-                                              f"file_unique_id: {update.message.animation.file_unique_id}\n"
-                                              f"file_id: {update.message.animation.file_id}\n"
-                                              f"This message will auto-delete in 5 seconds.")
+        config.config[update.channel_post.animation.file_unique_id] = update.channel_post.animation.file_id
+        msg = await update.channel_post.reply_text(f"Added to database!\n"
+                                                   f"file_unique_id: {update.channel_post.animation.file_unique_id}\n"
+                                                   f"file_id: {update.channel_post.animation.file_id}\n"
+                                                   f"This message will auto-delete in 5 seconds.")
         await asyncio.sleep(5)
         await msg.delete()
 
