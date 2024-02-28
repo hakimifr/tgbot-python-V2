@@ -70,7 +70,7 @@ class ModuleMetadata(util.module.ModuleMetadata):
         app.add_handler(CommandHandler("addtrigger", addtrigger, block=False))
         app.add_handler(CommandHandler("removetrigger", removetrigger, block=False))
         app.add_handler(MessageHandler(filters.ANIMATION, komaru_listener, block=False))
-        app.add_handler(MessageHandler(filters.TEXT, trigger_handler, block=False))
+        app.add_handler(MessageHandler(filters.TEXT, trigger_handler, block=False), group=1)
 
 
 async def update_komaru(update: Update, context: ContextTypes.DEFAULT_TYPE):
