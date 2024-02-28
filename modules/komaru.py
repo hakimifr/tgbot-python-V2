@@ -190,7 +190,8 @@ async def addtrigger(update: Update, context: ContextTypes.DEFAULT_TYPE):
             config_db.config[update.message.animation.file_unique_id]["trigger_keywords"].append(keyword)
 
     if len(errors) > 0:
-        await update.message.reply_text(f"Updated! There were some errors:\n{'\n'.join(errors)}")
+        joint: str = "\n".join(errors)
+        await update.message.reply_text(f"Updated! There were some errors:\n{joint}")
     else:
         await update.message.reply_text(f"Updated!")
 
@@ -224,7 +225,8 @@ async def removetrigger(update: Update, context: ContextTypes.DEFAULT_TYPE):
             errors.append(f"Keyword '{keyword}' does not exist")
 
     if len(errors) > 0:
-        await update.message.reply_text(f"Updated! There were some errors:\n{'\n'.join(errors)}")
+        joint: str = "\n".join(errors)
+        await update.message.reply_text(f"Updated! There were some errors:\n{joint}")
     else:
         await update.message.reply_text(f"Updated!")
 
