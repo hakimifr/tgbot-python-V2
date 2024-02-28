@@ -184,10 +184,10 @@ async def addtrigger(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     errors: list[str] = []
     for keyword in context.args:
-        if keyword in config_db.config[update.message.animation.file_unique_id]["trigger_keywords"]:
+        if keyword in config_db.config[update.message.reply_to_message.animation.file_unique_id]["trigger_keywords"]:
             errors.append(f"Keyword '{keyword}' already exists")
         else:
-            config_db.config[update.message.animation.file_unique_id]["trigger_keywords"].append(keyword)
+            config_db.config[update.message.reply_to_message.animation.file_unique_id]["trigger_keywords"].append(keyword)
 
     if len(errors) > 0:
         joint: str = "\n".join(errors)
@@ -219,8 +219,8 @@ async def removetrigger(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     errors: list[str] = []
     for keyword in context.args:
-        if keyword in config_db.config[update.message.animation.file_unique_id]["trigger_keywords"]:
-            config_db.config[update.message.animation.file_unique_id]["trigger_keywords"].remove(keyword)
+        if keyword in config_db.config[update.message.reply_to_message.animation.file_unique_id]["trigger_keywords"]:
+            config_db.config[update.message.reply_to_message.animation.file_unique_id]["trigger_keywords"].remove(keyword)
         else:
             errors.append(f"Keyword '{keyword}' does not exist")
 
