@@ -255,7 +255,7 @@ async def trigger_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     for value in config_db.config.values():
         for keyword in value["trigger_keywords"]:
-            if keyword in update.message.text:
+            if keyword.lower() in update.message.text.lower():
                 await update.message.reply_animation(value["file_id"])
                 return
 
