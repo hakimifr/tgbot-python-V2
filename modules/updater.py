@@ -16,6 +16,7 @@
 
 import os
 import sys
+import atexit
 import logging
 import telegram.error
 import util.module
@@ -131,6 +132,7 @@ async def update_start(update: Update, context: CallbackContext) -> None:
     except telegram.error.TimedOut:
         pass
 
+    atexit._run_exitfuncs()
     execve(sys.executable, [sys.executable, *sys.argv], os.environ)
 
 
@@ -155,6 +157,7 @@ async def restart(update: Update, context: ContextTypes.DEFAULT_TYPE):
     }
     config.write_config()
 
+    atexit._run_exitfuncs()
     execve(sys.executable, [sys.executable, *sys.argv], os.environ)
 
 
