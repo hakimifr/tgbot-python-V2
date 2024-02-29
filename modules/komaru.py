@@ -69,6 +69,7 @@ class ModuleMetadata(util.module.ModuleMetadata):
         app.add_handler(CommandHandler("unwhitelist", unwhitelist, block=False))
         app.add_handler(CommandHandler("addtrigger", addtrigger, block=False))
         app.add_handler(CommandHandler("removetrigger", removetrigger, block=False))
+        app.add_handler(CommandHandler("listtrigger", listtrigger, block=False))
         app.add_handler(MessageHandler(filters.ANIMATION, komaru_listener, block=False))
         app.add_handler(MessageHandler(filters.TEXT, trigger_handler, block=False), group=1)
 
@@ -229,6 +230,23 @@ async def removetrigger(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(f"Updated! There were some errors:\n{joint}")
     else:
         await update.message.reply_text(f"Updated!")
+
+
+async def listtrigger(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not update.message.reply_to_message:
+        await update.message.reply_text("Reply to a GIF to list triggers!")
+        return
+
+    if not update.message.reply_to_message.animation:
+        await update.message.reply_text("Replied message is not a GIF!")
+        return
+
+    if not update.message.reply_to_message.animation.file_unique_id in config_db.config.keys():
+        await update.message.reply_text("Replied GIF is not in DB.")
+        return
+
+    anim = update.message.reply_to_message.animation
+    await update.message.reply_text(f"{','.join(config_db.config[anim.file_unique_id]['trigger_keywords'])}")
 
 
 async def trigger_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
