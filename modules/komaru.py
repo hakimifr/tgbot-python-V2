@@ -245,3 +245,7 @@ async def trigger_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 Help.register_help("toggleupdatekomaru", "Toggle Komaru updater listener")
 Help.register_help("countkomarugifs", "Count number of komaru gifs in database")
 Help.register_help("clearkomarudb", "Clear komaru gifs database (DANGEROUS)")
+Help.register_help("whitelist", "Whitelist the chat for komaru keyword trigger")
+Help.register_help("unwhitelist", "Unwhitelist the chat from komary keyword trigger")
+Help.register_help("addtrigger", "Add keyword(s) to be triggered for a gif")
+Help.register_help("removetrigger", "Remove keyword(s) trigger from a gif")
