@@ -265,9 +265,14 @@ async def trigger_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def komaru_random(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_animation(
-        config_db.config[random.choice(tuple(config_db.config.keys()))]["file_id"]
-    )
+    if update.message.reply_to_message:
+        await update.message.reply_animation(
+            config_db.config[random.choice(tuple(config_db.config.keys()))]["file_id"]
+        )
+    else:
+        await update.message.reply_animation(
+            config_db.config[random.choice(tuple(config_db.config.keys()))]["file_id"]
+        )
 
 Help.register_help("toggleupdatekomaru", "Toggle Komaru updater listener")
 Help.register_help("countkomarugifs", "Count number of komaru gifs in database")
