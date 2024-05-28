@@ -21,6 +21,7 @@ import subprocess
 import util.module
 from util.help import Help
 from util.config import Config
+from modules.rm6785 import RM6785_CHANNEL_ID
 from telegram import Update
 from telegram.ext import ContextTypes, CommandHandler, MessageHandler, filters, Application
 from telegram.helpers import escape_markdown
@@ -36,6 +37,7 @@ class ModuleMetadata(util.module.ModuleMetadata):
         app.add_handler(CommandHandler("magisk", magisk, block=False))
         app.add_handler(CommandHandler("toggleautoforward", toggle_auto_forward, block=False))
         app.add_handler(MessageHandler(filters.Regex(r"(?i)#Pratham"), auto_forward, block=False))
+        app.add_handler(MessageHandler(filters.ALL, tyagi_sanitizer, block=False), group=2)
 
 
 async def neofetch(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -85,6 +87,14 @@ async def auto_forward(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await update.message.forward(user_id)
     await update.message.reply_text("Message forwarded to Pratham")
+
+
+async def tyagi_sanitizer(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    if update.effective_chat.id != RM6785_CHANNEL_ID:
+        return
+
+    if update.channel_post.from_user.id == 712305133:
+        await update.channel_post.delete()
 
 
 Help.register_help("magisk", "Get the links to latest magisk apks.")
