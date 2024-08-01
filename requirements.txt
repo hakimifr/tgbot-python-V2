@@ -1,5 +1,5 @@
-openai==1.6.1
-pylint==3.0.3
-python-telegram-bot==20.8
-requests==2.31.0
-PyGithub==2.1.1
+openai==1.37.1
+pylint==3.2.6
+python-telegram-bot==21.4
+requests==2.32.3
+PyGithub==2.3.0
