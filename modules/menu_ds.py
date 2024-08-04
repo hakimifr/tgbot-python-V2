@@ -6,6 +6,7 @@ import logging
 
 import util.module
 from util.config import Config
+from util.help import Help
 from telegram import Update, Document, Message
 from telegram.ext import CommandHandler, Application, ContextTypes
 
@@ -27,14 +28,14 @@ def get_datetime() -> datetime:
     return datetime.now(timezone("Asia/Kuala_Lumpur"))
 
 
-async def recycle_if_possible(day: str, update: Update) -> bool:
+async def recycle_if_possible(day: str, update: Update) -> None:
     """Returns whether it is possible"""
     if config.config.get(day):
         log.info("Recycling existing file id")
         await update.message.reply_document(Document(*config.config.get(day)))  # type: ignore
-        return True
-
-    return False
+    else:
+        message: Message = await update.message.reply_document(f"menus/{day}.png")
+        add_id(day, message)
 
 
 def add_id(day: str, message: Message) -> None:
@@ -50,9 +51,7 @@ async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         await update.message.reply_text("Internal error occured")
         log.error(f"File {menu_file.absolute()} does not exist!")
     else:
-        if not await recycle_if_possible(day, update):
-            message = await update.message.reply_document(f"menus/{day}.png")
-            add_id(day, message)
+        await recycle_if_possible(day, update)
 
 
 async def tomorrow(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -62,6 +61,8 @@ async def tomorrow(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if int(day) > max_day_in_this_month:
         day = "1"
 
-    if not await recycle_if_possible(day, update):
-        message: Message = await update.message.reply_document(f"menus/{day}.png")
-        add_id(day, message)
+    await recycle_if_possible(day, update)
+
+
+Help.register_help("menu", "Return today's menu")
+Help.register_help("tomorrow", "Return tomorrow's menu")
