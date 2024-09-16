@@ -19,11 +19,9 @@ import logging
 import util.module
 import telegram
 import telegram.error
-from util.help import Help
-from util.config import Config
-from modules.rm6785 import RM6785_MASTER_USER
+import torch
 from telegram import Update
-from telegram.ext import ContextTypes, CommandHandler, MessageHandler, Application, filters
+from telegram.ext import ContextTypes, MessageHandler, Application, filters
 from transformers import pipeline, Pipeline
 log: logging.Logger = logging.getLogger(__name__)
 
@@ -72,7 +70,8 @@ class ModuleMetadata(util.module.ModuleMetadata):
         log.info("Loading AI model, this will take a while")
         pipe = pipeline(
             "text-generation",
-            model="google/gemma-2b-it"
+            model="google/gemma-2b-it",
+            model_kwargs={"torch_dtype": torch.bfloat16}
         )
         log.info("AI model loaded")
 
@@ -101,7 +100,8 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
     if fraud_status == "Yes" and confidence_rate >= 50:
         try:
             await update.message.delete()
-            await update.message.reply_text(f"Deleted message from {update.message.from_user.first_name} due to suspected fraud\n"
-                                            f"Gemma's confidence rate: {confidence_rate}%", allow_sending_without_reply=True)
+            await update.get_bot().send_message(update.message.chat_id,
+                                                f"Deleted message from {update.message.from_user.first_name} due to suspected fraud\n"
+                                                f"Gemma's confidence rate: {confidence_rate}%")
         except telegram.error.BadRequest:
             log.warning("Failed to delete message")
