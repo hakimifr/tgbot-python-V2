@@ -38,6 +38,7 @@ class ModuleMetadata(util.module.ModuleMetadata):
     def setup_module(cls, app: Application):
         app.add_handler(CommandHandler("menu", menu, block=False))
         app.add_handler(CommandHandler("tomorrow", tomorrow, block=False))
+        app.add_handler(CommandHandler("rebuilddb", rebuilddb, block=False))
 
 
 def get_datetime() -> datetime:
@@ -78,6 +79,12 @@ async def tomorrow(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         day = "1"
 
     await recycle_if_possible(day, update)
+
+
+async def rebuilddb(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    config.config.clear()
+    config.write_config()
+    await update.message.reply_text("Cleared database")
 
 
 Help.register_help("menu", "Return today's menu")
