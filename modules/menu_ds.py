@@ -48,9 +48,9 @@ async def recycle_if_possible(day: str, update: Update) -> None:
     """Returns whether it is possible"""
     if config.config.get(day):
         log.info("Recycling existing file id")
-        await update.message.reply_document(Document(*config.config.get(day)))  # type: ignore
+        await update.message.reply_photo(Document(*config.config.get(day)))  # type: ignore
     else:
-        message: Message = await update.message.reply_document(f"menus/{day}.png")
+        message: Message = await update.message.reply_photo(f"menus/{day}.png")
         add_id(day, message)
 
 
