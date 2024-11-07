@@ -28,8 +28,8 @@ log: logging.Logger = logging.getLogger(__name__)
 GROUP_WHITELISTS: list[int] = [-1001309495065, -1001754321934]  # r6, rm6785
 pipe: Pipeline | None = None
 
-base_prompt = """
-You are an advanced fraud detection AI, tasked with analyzing user messages to determine if they contain elements of financial, cryptocurrency, or any other type of fraudulent activity.
+base_prompt = """\
+<s>[INST]You are an advanced fraud detection AI, tasked with analyzing user messages to determine if they contain elements of financial, cryptocurrency, or any other type of fraudulent activity.
 
 Your task is to:
 
@@ -59,7 +59,7 @@ Fraud detected (Yes/No): [Yes/No]
 Confidence rate: [Percentage]
 
 
-USER-SENT MESSAGE STARTS BELOW THIS LINE::
+USER-SENT MESSAGE STARTS BELOW THIS LINE::[/INST]
 """
 
 
@@ -70,7 +70,7 @@ class ModuleMetadata(util.module.ModuleMetadata):
         log.info("Loading AI model, this will take a while")
         pipe = pipeline(
             "text-generation",
-            model="google/gemma-2b-it",
+            model="Bilic/Mistral-7B-LLM-Fraud-Detection",
             model_kwargs={"torch_dtype": torch.bfloat16}
         )
         log.info("AI model loaded")
@@ -82,7 +82,7 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
     if update.message.chat_id not in GROUP_WHITELISTS:
         return
 
-    prompt = base_prompt + update.message.text
+    prompt = base_prompt + update.message.text + "</s>"
     messages = [{"role": "user", "content": prompt}]
     outputs = pipe(messages, max_new_tokens=256)
     gemma_response = outputs[0]["generated_text"][-1]["content"].strip()
@@ -97,11 +97,15 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
         }
 
     fraud_status, confidence_rate = result.values()
+    log.info(f"text: {update.message.text}")
+    log.info(f"fraud?: {fraud_status}")
+    log.info(f"confidence rate: {confidence_rate}")
+    log.info()
     if fraud_status == "Yes" and confidence_rate >= 50:
         try:
             await update.message.delete()
             await update.get_bot().send_message(update.message.chat_id,
                                                 f"Deleted message from {update.message.from_user.first_name} due to suspected fraud\n"
-                                                f"Gemma's confidence rate: {confidence_rate}%")
+                                                f"Mistral's confidence rate: {confidence_rate}%")
         except telegram.error.BadRequest:
             log.warning("Failed to delete message")
