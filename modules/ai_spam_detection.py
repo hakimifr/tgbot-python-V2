@@ -66,13 +66,14 @@ USER-SENT MESSAGE STARTS BELOW THIS LINE::
 class ModuleMetadata(util.module.ModuleMetadata):
     @classmethod
     def setup_module(cls, app: Application):
-        global pipe
+        global model
+        global tokenizer
         log.info("Loading AI model, this will take a while")
-        pipe = pipeline(
-            "text-generation",
-            model="HuggingFaceTB/SmolLM-135M",
-            model_kwargs={"torch_dtype": torch.bfloat16}
-        )
+        checkpoint = "HuggingFaceTB/SmolLM-135M"
+        tokenizer = AutoTokenizer.from_pretrained(checkpoint)
+        # for fp16 use `torch_dtype=torch.float16` instead
+        model = AutoModelForCausalLM.from_pretrained(checkpoint, device_map="auto", torch_dtype=torch.bfloat16)
+        inputs = tokenizer.encode("def print_hello_world():", return_tensors="pt").to("cuda")
         log.info("AI model loaded")
 
         app.add_handler(MessageHandler(filters.TEXT, on_message, block=False), group=5)
@@ -83,13 +84,12 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
         return
 
     prompt = base_prompt + update.message.text
-    messages = [{"role": "user", "content": prompt}]
-    outputs = pipe(messages, max_new_tokens=256)
-    gemma_response = outputs[0]["generated_text"][-1]["content"].strip()
+    outputs = model.generate(tokenizer.encode(prompt))
+    response = tokenizer.decode(outputs[0])
 
     pattern = r"Fraud detected \(Yes/No\): (\w+)\s*Confidence rate: (\d+)%"
 
-    match = re.search(pattern, gemma_response)
+    match = re.search(pattern, response)
     if match:
         result = {
             'Fraud_detected': match.group(1),
