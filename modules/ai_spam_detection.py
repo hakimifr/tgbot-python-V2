@@ -72,7 +72,7 @@ class ModuleMetadata(util.module.ModuleMetadata):
         tokenizer = AutoTokenizer.from_pretrained(checkpoint)
         # for fp16 use `torch_dtype=torch.float16` instead
         model = AutoModelForCausalLM.from_pretrained(checkpoint, device_map="auto", torch_dtype=torch.bfloat16)
-        inputs = tokenizer.encode("def print_hello_world():", return_tensors="pt").to("cuda")
+        inputs = tokenizer.encode("def print_hello_world():", return_tensors="pt").to("cpu")
         log.info("AI model loaded")
 
         app.add_handler(MessageHandler(filters.TEXT, on_message, block=False), group=0)
@@ -88,7 +88,7 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
     log.info("")
 
     prompt = base_prompt + update.message.text
-    outputs = model.generate(tokenizer.encode(prompt))
+    outputs = model.generate(tokenizer.encode(prompt, return_tensors="pt").to("cpu"))
     response = tokenizer.decode(outputs[0])
 
     pattern = r"Fraud detected \(Yes/No\): (\w+)\s*Confidence rate: (\d+)%"
