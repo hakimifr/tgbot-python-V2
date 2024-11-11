@@ -88,7 +88,7 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
     log.info("")
 
     prompt = base_prompt + update.message.text
-    outputs = model.generate(tokenizer.encode(prompt, return_tensors="pt").to("cpu"))
+    outputs = model.generate(tokenizer.encode(prompt, return_tensors="pt").to("cpu"), max_new_tokens=600)
     response = tokenizer.decode(outputs[0])
 
     pattern = r"Fraud detected \(Yes/No\): (\w+)\s*Confidence rate: (\d+)%"
