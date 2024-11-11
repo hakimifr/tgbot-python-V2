@@ -22,11 +22,10 @@ import telegram.error
 import torch
 from telegram import Update
 from telegram.ext import ContextTypes, MessageHandler, Application, filters
-from transformers import pipeline, Pipeline
+from transformers import AutoTokenizer, AutoModelForCausalLM
 log: logging.Logger = logging.getLogger(__name__)
 
 GROUP_WHITELISTS: list[int] = [-1001309495065, -1001754321934]  # r6, rm6785
-pipe: Pipeline | None = None
 
 base_prompt = """\
 You are an advanced fraud detection AI, tasked with analyzing user messages to determine if they contain elements of financial, cryptocurrency, or any other type of fraudulent activity.
