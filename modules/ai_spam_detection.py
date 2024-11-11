@@ -81,7 +81,12 @@ class ModuleMetadata(util.module.ModuleMetadata):
 
 async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if update.message.chat_id not in GROUP_WHITELISTS:
+        log.info(f"chat with id {update.message.chat_id} not in whitelist")
         return
+
+    log.info(f"got message: '{update.message.text}'")
+    log.info(f"from chat: {update.message.chat_id}")
+    log.info("")
 
     prompt = base_prompt + update.message.text
     outputs = model.generate(tokenizer.encode(prompt))
