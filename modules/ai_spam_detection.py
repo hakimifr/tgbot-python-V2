@@ -76,7 +76,7 @@ class ModuleMetadata(util.module.ModuleMetadata):
         inputs = tokenizer.encode("def print_hello_world():", return_tensors="pt").to("cuda")
         log.info("AI model loaded")
 
-        app.add_handler(MessageHandler(filters.TEXT, on_message, block=False), group=5)
+        app.add_handler(MessageHandler(filters.TEXT, on_message, block=False), group=0)
 
 
 async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
