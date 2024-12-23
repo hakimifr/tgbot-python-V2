@@ -76,7 +76,12 @@ app.add_handler(CallbackQueryHandler(callback, pattern=lambda data: data == f"{m
 mdls = tuple(Path("modules").glob("*.py"))
 log.info(f"Modules found: {mdls}")
 for mdl in mdls:
-    mod: object = import_module("modules." + mdl.name.removesuffix(".py"))
+    try:
+        mod: object = import_module("modules." + mdl.name.removesuffix(".py"))
+    except Exception as e:
+        log.error(f"failed to import module '{mdl.name}', it will not be loaded at all.")
+        log.error(f"error was: {e}")
+        continue
 
     log.info(f"Loading module '{mdl}'")
     if not getattr(mod, "ModuleMetadata", None):
