@@ -14,6 +14,7 @@
 #
 # Copyright (c) 2024, Firdaus Hakimi <hakimifirdaus944@gmail.com>
 
+import os
 import re
 import logging
 import util.module
@@ -65,6 +66,9 @@ USER-SENT MESSAGE STARTS BELOW THIS LINE::
 class ModuleMetadata(util.module.ModuleMetadata):
     @classmethod
     def setup_module(cls, app: Application):
+        if os.getenv("DISABLE_AI_SPAM_DETECTION", "0") == "1":
+            log.info("AI spam detection is disabled, returning early")
+            return
         global model
         global tokenizer
         log.info("Loading AI model, this will take a while")
