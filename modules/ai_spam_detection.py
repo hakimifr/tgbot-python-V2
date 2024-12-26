@@ -116,7 +116,7 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
     log.info(f"text: {update.message.text}")
     log.info(f"fraud?: {fraud_status}")
     log.info(f"confidence rate: {confidence_rate}")
-    log.info()
+    log.info("")
     if fraud_status == "Yes" and confidence_rate >= 50:
         try:
             await update.message.delete()
