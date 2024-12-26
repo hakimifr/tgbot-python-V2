@@ -20,10 +20,9 @@ import logging
 import util.module
 import telegram
 import telegram.error
-import torch
 from telegram import Update
 from telegram.ext import ContextTypes, MessageHandler, Application, filters
-from transformers import AutoTokenizer, AutoModelForCausalLM
+import google.generativeai as genai
 log: logging.Logger = logging.getLogger(__name__)
 
 GROUP_WHITELISTS: list[int] = [-1001309495065, -1001754321934]  # r6, rm6785
@@ -69,15 +68,23 @@ class ModuleMetadata(util.module.ModuleMetadata):
         if os.getenv("DISABLE_AI_SPAM_DETECTION", "0") == "1":
             log.info("AI spam detection is disabled, returning early")
             return
+
+        genai.configure(api_key=os.environ.get("GEMINI_API_KEY", ""))
+        global generation_config
         global model
-        global tokenizer
-        log.info("Loading AI model, this will take a while")
-        checkpoint = "HuggingFaceTB/SmolLM-135M"
-        tokenizer = AutoTokenizer.from_pretrained(checkpoint)
-        # for fp16 use `torch_dtype=torch.float16` instead
-        model = AutoModelForCausalLM.from_pretrained(checkpoint, device_map="auto", torch_dtype=torch.bfloat16)
-        inputs = tokenizer.encode("def print_hello_world():", return_tensors="pt").to("cpu")
-        log.info("AI model loaded")
+
+        generation_config = {
+            "temperature": 1,
+            "top_p": 0.95,
+            "top_k": 40,
+            "max_output_tokens": 8192,
+            "response_mime_type": "text/plain",
+        }
+
+        model = genai.GenerativeModel(
+            model_name="gemini-2.0-flash-exp",
+            generation_config=generation_config
+        )
 
         app.add_handler(MessageHandler(filters.TEXT, on_message, block=False), group=0)
 
@@ -92,12 +99,13 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
     log.info("")
 
     prompt = base_prompt + update.message.text
-    outputs = model.generate(tokenizer.encode(prompt, return_tensors="pt").to("cpu"), max_new_tokens=600)
-    response = tokenizer.decode(outputs[0])
+
+    chat_session = model.start_chat(history=[])
+    response = chat_session.send_message(prompt)
 
     pattern = r"Fraud detected \(Yes/No\): (\w+)\s*Confidence rate: (\d+)%"
 
-    match = re.search(pattern, response)
+    match = re.search(pattern, response.text)
     if match:
         result = {
             'Fraud_detected': match.group(1),
@@ -114,6 +122,6 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
             await update.message.delete()
             await update.get_bot().send_message(update.message.chat_id,
                                                 f"Deleted message from {update.message.from_user.first_name} due to suspected fraud\n"
-                                                f"SmolLM's confidence rate: {confidence_rate}%")
+                                                f"Gemini 2.0 Flash (experiment) confidence rate: {confidence_rate}%")
         except telegram.error.BadRequest:
             log.warning("Failed to delete message")
