@@ -89,6 +89,11 @@ class ModuleMetadata(util.module.ModuleMetadata):
         app.add_handler(MessageHandler(filters.TEXT, on_message, block=False), group=0)
 
 
+async def msg_deleter(context: ContextTypes.DEFAULT_TYPE) -> None:
+    job = context.job
+    await context.bot.delete_message(job.data[0], job.data[1])
+
+
 async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if update.message.chat_id not in GROUP_WHITELISTS:
         log.info(f"chat with id {update.message.chat_id} not in whitelist")
@@ -106,17 +111,23 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
     pattern = r"Fraud detected \(Yes/No\): (\w+)\s*Confidence rate: (\d+)%"
 
     match = re.search(pattern, response.text)
-    if match:
-        result = {
-            'Fraud_detected': match.group(1),
-            'Confidence_rate': int(match.group(2))
-        }
+    result = {
+        'Fraud_detected': match.group(1),
+        'Confidence_rate': int(match.group(2))
+    }
 
     fraud_status, confidence_rate = result.values()
     log.info(f"text: {update.message.text}")
     log.info(f"fraud?: {fraud_status}")
     log.info(f"confidence rate: {confidence_rate}")
     log.info("")
+
+    msg = await update.message.reply_text("Gemini 2.0 Flash (exp) debug info\n"
+                                         f"Fraud?: {fraud_status}\n"
+                                         f"Confidence rate: {confidence_rate}\n\n"
+                                         f"This message will auto delete in 5 secs")
+    context.job_queue.run_once(msg_deleter, 5, data=[update.message.chat_id, msg.message_id])
+
     if fraud_status == "Yes" and confidence_rate >= 50:
         try:
             await update.message.delete()
