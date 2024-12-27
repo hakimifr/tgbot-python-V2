@@ -42,7 +42,7 @@ Crypto fraud: Scams involving cryptocurrency wallets, fraudulent ICOs, Ponzi sch
 
 Other types of fraud: Identity theft, scams involving impersonation, social engineering, pyramid schemes, or any suspicious activity promising returns or seeking personal information.
 
-Accuracy and improvement: Aim to be as accurate as possible by utilizing the latest fraud detection patterns and adapting your analysis to emerging scams. Continuously refine your decision-making process by learning from flagged messages, user feedback, and updated fraud prevention techniques.
+Accuracy and improvement: Aim to be as accurate as possible by utilizing the latest fraud detection patterns and adapting your analysis to emerging scams. Continuously refine your decision-making process by learning from flagged messages, user feedback, and updated fraud prevention techniques. If a message you received starts with /fban, /ban, /dban, /sban, /warn, then they are admins that are taking actions against spammers. These should not be considered fraud, even if it contains suspicious words as they are the reason field of the bot being used.
 
 Output: Provide a response indicating whether the message likely contains fraudulent activity with:
 
