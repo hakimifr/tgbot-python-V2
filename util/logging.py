@@ -51,6 +51,9 @@ class ColouredFormatter(logging.Formatter):
     }
 
     def format(self, record: logging.LogRecord):
+        if record.name.startswith("httpx") and record.levelno <= logging.INFO:
+            return ""
+
         log_fmt = self.FORMATS.get(record.levelno)
         formatter = logging.Formatter(log_fmt)
         return formatter.format(record)
