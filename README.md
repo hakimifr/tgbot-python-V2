@@ -14,6 +14,26 @@ for details on how to make a module for the bot, refer [this](modules/README.md)
 This codebase is pure cancer btw, not that I cannot write clean code, but I'm too
 lazy to do so :p
 
+## Sample Text for `modules/ai_spam_detection.py`
+This can be used to test ai backend. Should give positive result.
+```
+New airdrop: Earnbet (BTC)
+Total Reward: $1,000 worth of BTC
+Rate: ⭐️⭐️⭐️⭐️
+Winners: 50 Random
+Distribution: same day
+
+Airdrop Link: airdrop page
+
+🔹Complete the tasks
+🔹Submit your details on the airdrop page
+🔹50 Random winners will receive $20 worth of BTC each
+
+Note: Airdrop will end on 7th January and rewards will be distributed to the winners on the same day after airdrop ends.
+
+Disclaimer: Please do your own research (DYOR) before joining to any airdrops project, also airdrop is 100% free. Don't send any fee for receiving airdrop tokens.
+```
+
 ## License
 
 This bot is licensed under GPLv3 which means you MUST make all of your changes public.
