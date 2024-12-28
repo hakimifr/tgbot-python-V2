@@ -101,7 +101,9 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
 
     log.info(f"got message: '{update.message.text}'")
     log.info(f"from chat: {update.message.chat_id}")
-    log.info("")
+    if len(update.message.text.split(" ")) <= 3:
+        log.info("skip checking this text, <= 3 words")
+        return
 
     prompt = base_prompt + update.message.text
 
