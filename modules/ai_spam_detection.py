@@ -53,9 +53,9 @@ The presence of common fraud patterns (e.g., urgency, threats, promises of high 
 The context and phrasing of the message (e.g., grammatical mistakes, inconsistent language, suspicious links).
 Correlation to known fraud techniques or previously flagged patterns.
 
-Expected format of output:
+Expected format of output (ONLY THE PART IN SQUARE BRACKET SHOULD BE CHANGED):
 Fraud detected (Yes/No): [Yes/No]
-Confidence rate: [Percentage]
+Confidence rate: [Percentage]%
 
 
 USER-SENT MESSAGE STARTS BELOW THIS LINE::
