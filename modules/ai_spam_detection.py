@@ -109,10 +109,15 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
 
     chat_session = model.start_chat(history=[])
     response = chat_session.send_message(prompt)
+    log.info(f"Gemini's response: {response.text}")
 
     pattern = r"Fraud detected \(Yes/No\): (\w+)\s*Confidence rate: (\d+)%"
 
     match = re.search(pattern, response.text)
+    if not match:
+        log.info("something went wrong with regexing Gemini's response!")
+        return
+
     result = {
         'Fraud_detected': match.group(1),
         'Confidence_rate': int(match.group(2))
