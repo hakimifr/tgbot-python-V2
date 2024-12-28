@@ -86,7 +86,7 @@ class ModuleMetadata(util.module.ModuleMetadata):
             generation_config=generation_config
         )
 
-        app.add_handler(MessageHandler(filters.TEXT, on_message, block=False), group=0)
+        app.add_handler(MessageHandler(filters.TEXT, on_message, block=False), group=3)
 
 
 async def msg_deleter(context: ContextTypes.DEFAULT_TYPE) -> None:
