@@ -112,8 +112,6 @@ async def shuffle(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await ret.edit_text(" ".join(text))
 
 
-Help.register_help("gay", "Return gayness level of you/replied user.")
-Help.register_help("sexy", "Return sexiness level of you/replied user.")
 Help.register_help("about_random_percentage", "Return source code used for generating /gay and /sexy response.")
 Help.register_help("shuffle", "Shuffle replied message.")
 
@@ -210,7 +208,6 @@ async def reset_words(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
 if config.config.get("insert_words") is None:
     init_insert_words()
 
-Help.register_help("insert", "Returns a randomly generated sentence.")
 Help.register_help("add_words", "Adds the given words to database for /insert.")
 Help.register_help("remove_words", "Removes the given words from database for /insert.")
 Help.register_help("reset_words", "Resets the words in database for /insert.")
