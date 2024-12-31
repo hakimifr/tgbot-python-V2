@@ -90,17 +90,23 @@ class ModuleMetadata(util.module.ModuleMetadata):
 
 
 async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    assert update.message is not None
+    if update.message.caption is not None:
+        text: str = update.message.caption
+    else:
+        text: str = update.message.text
+
     if update.message.chat_id not in GROUP_WHITELISTS:
         log.info(f"chat with id {update.message.chat_id} not in whitelist")
         return
 
-    log.info(f"got message: '{update.message.text}'")
+    log.info(f"got message: '{text}'")
     log.info(f"from chat: {update.message.chat_id}")
-    if len(update.message.text.split(" ")) <= 3:
+    if len(text.split(" ")) <= 3:
         log.info("skip checking this text, <= 3 words")
         return
 
-    prompt = base_prompt + update.message.text
+    prompt = base_prompt + text
 
     chat_session = model.start_chat(history=[])
     response = chat_session.send_message(prompt)
@@ -119,7 +125,7 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
     }
 
     fraud_status, confidence_rate = result.values()
-    log.info(f"text: {update.message.text}")
+    log.info(f"text: {text}")
     log.info(f"fraud?: {fraud_status}")
     log.info(f"confidence rate: {confidence_rate}")
     log.info("")
