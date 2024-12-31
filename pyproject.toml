@@ -1,0 +1,14 @@
+[project]
+name = "tgbot-python-v2"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "google-generativeai>=0.8.3",
+    "openai>=1.58.1",
+    "pygithub>=2.5.0",
+    "python-telegram-bot>=21.9",
+    "pytz>=2024.2",
+    "requests>=2.32.3",
+]
