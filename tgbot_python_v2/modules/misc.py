@@ -18,10 +18,10 @@ import sys
 import logging
 import requests
 import subprocess
-import util.module
-from util.help import Help
-from util.config import Config
-from modules.rm6785 import RM6785_CHANNEL_ID
+import tgbot_python_v2.util.module
+from tgbot_python_v2.util.help import Help
+from tgbot_python_v2.util.config import Config
+from tgbot_python_v2.modules.rm6785 import RM6785_CHANNEL_ID
 from telegram import Update
 from telegram.ext import ContextTypes, CommandHandler, MessageHandler, filters, Application
 from telegram.helpers import escape_markdown
@@ -30,7 +30,7 @@ main_log: logging.Logger = logging.getLogger(__file__)
 auto_forward_state: bool = False
 
 
-class ModuleMetadata(util.module.ModuleMetadata):
+class ModuleMetadata(tgbot_python_v2.util.module.ModuleMetadata):
     @classmethod
     def setup_module(cls, app: Application):
         app.add_handler(CommandHandler("neofetch", neofetch, block=False))

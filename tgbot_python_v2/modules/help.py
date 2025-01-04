@@ -22,14 +22,14 @@ Available methods:
         Sends help message.
 """
 import logging
-import util.module
-from util.help import Help
+import tgbot_python_v2.util.module
+from tgbot_python_v2.util.help import Help
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ContextTypes, CommandHandler, Application, CallbackContext, CallbackQueryHandler
 log: logging.Logger = logging.getLogger(__name__)
 
 
-class ModuleMetadata(util.module.ModuleMetadata):
+class ModuleMetadata(tgbot_python_v2.util.module.ModuleMetadata):
     @classmethod
     def setup_module(cls, app: Application):
         app.add_handler(CommandHandler("help", bot_help, block=False))

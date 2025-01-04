@@ -19,15 +19,15 @@ import sys
 import atexit
 import logging
 import telegram.error
-import util.module
+import tgbot_python_v2.util.module
 
 from time import sleep
 from os import system, execve
 from telegram import Update, Message, InlineKeyboardMarkup, InlineKeyboardButton
-from util.help import Help
-from util.config import Config
+from tgbot_python_v2.util.help import Help
+from tgbot_python_v2.util.config import Config
 from telegram.ext import CallbackContext, CommandHandler, ContextTypes, Application
-from modules.rm6785 import RM6785_MASTER_USER
+from tgbot_python_v2.modules.rm6785 import RM6785_MASTER_USER
 log: logging.Logger = logging.getLogger(__name__)
 config: Config = Config("updater.json")
 name: str = __name__
@@ -52,7 +52,7 @@ message_id: int
 """
 
 
-class ModuleMetadata(util.module.ModuleMetadata):
+class ModuleMetadata(tgbot_python_v2.util.module.ModuleMetadata):
     @classmethod
     def setup_module(cls, app: Application):
         app.add_handler(CommandHandler("update", update))

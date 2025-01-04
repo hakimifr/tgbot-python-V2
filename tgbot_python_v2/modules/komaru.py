@@ -17,10 +17,10 @@
 import random
 import asyncio
 import logging
-import util.module
+import tgbot_python_v2.util.module
 
-from util.help import Help
-from util.config import Config
+from tgbot_python_v2.util.help import Help
+from tgbot_python_v2.util.config import Config
 
 from telegram import Update
 from telegram.ext import ContextTypes, CommandHandler, Application, filters, MessageHandler
@@ -59,7 +59,7 @@ for key in config_db.config.keys():
         config_db.config[key] = {"file_id": config_db.config[key], "trigger_keywords": []}
 
 
-class ModuleMetadata(util.module.ModuleMetadata):
+class ModuleMetadata(tgbot_python_v2.util.module.ModuleMetadata):
     @classmethod
     def setup_module(cls, app: Application):
         app.add_handler(CommandHandler("toggleupdatekomaru", update_komaru, block=False))

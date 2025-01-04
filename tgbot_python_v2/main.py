@@ -19,12 +19,12 @@
 import os
 import time
 import logging
-import util.logging
+import tgbot_python_v2.util.logging
 
 from importlib import import_module
 from pathlib import Path
 
-from util.module import ModuleMetadata
+from tgbot_python_v2.util.module import ModuleMetadata
 
 log = logging.getLogger(__name__)
 
@@ -48,36 +48,36 @@ except ImportError:
                            "file or environment variable.")
 Path(".token").write_text(TOKEN)
 
-from util.help import Help
+from tgbot_python_v2.util.help import Help
 
 log.info("Starting bot startup timer")
 import_start_time = time.time()
 
-import modules.updater
+import tgbot_python_v2.modules.updater
 
 # TODO: Implement these modules (ref: github.com/Hakimi0804/tgbot-fish)
-# import modules.spam_protect     # Prevent spammers in groups
-# import modules.moderation       # /ban, /kick, etc
-# import modules.komaru           # Pranaya's komaru GIFs channel management
+# import tgbot_python_v2.modules.spam_protect     # Prevent spammers in groups
+# import tgbot_python_v2.modules.moderation       # /ban, /kick, etc
+# import tgbot_python_v2.modules.komaru           # Pranaya's komaru GIFs channel management
 
 app = ApplicationBuilder().token(TOKEN) \
-                          .post_init(modules.updater.finish_update) \
+                          .post_init(tgbot_python_v2.modules.updater.finish_update) \
                           .build()
 
 
 async def callback(update: Update, context: CallbackContext) -> None:
-    await modules.updater.confirm_update(update, context)
+    await tgbot_python_v2.modules.updater.confirm_update(update, context)
 
 
 app.add_handler(CallbackQueryHandler(callback, pattern=lambda data: data == f"{modules.updater.name}:confirm_update",
                                      block=False))
 
 # Load modules
-mdls = tuple(Path("modules").glob("*.py"))
+mdls = tuple(Path("tgbot_python_v2/modules").glob("*.py"))
 log.info(f"Modules found: {mdls}")
 for mdl in mdls:
     try:
-        mod: object = import_module("modules." + mdl.name.removesuffix(".py"))
+        mod: object = import_module("tgbot_python_v2.modules." + mdl.name.removesuffix(".py"))
     except Exception as e:
         log.error(f"failed to import module '{mdl.name}', it will not be loaded at all.")
         log.error(f"error was: {e}")
@@ -89,7 +89,7 @@ for mdl in mdls:
         continue
 
     if not issubclass(mod.ModuleMetadata, ModuleMetadata):
-        log.error(f"ModuleMetadata of module '{mdl}' is not a subclass of util.module.ModuleMetadata")
+        log.error(f"ModuleMetadata of module '{mdl}' is not a subclass of tgbot_python_v2.tgbot_python_v2.util.module.ModuleMetadata")
         log.error(f"Refusing to load module '{mdl}'")
         continue
 

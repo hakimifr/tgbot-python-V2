@@ -15,17 +15,17 @@
 # Copyright (c) 2024, Firdaus Hakimi <hakimifirdaus944@gmail.com>
 
 import logging
-import util.module
+import tgbot_python_v2.util.module
 from pathlib import Path
 from telegram import Update
-from util.help import Help
+from tgbot_python_v2.util.help import Help
 from telegram.ext import ContextTypes, CommandHandler, Application
-from modules.rm6785 import RM6785_MASTER_USER
+from tgbot_python_v2.modules.rm6785 import RM6785_MASTER_USER
 log: logging.Logger = logging.getLogger(__name__)
 TOKEN: str = Path(".token").read_text()
 
 
-class ModuleMetadata(util.module.ModuleMetadata):
+class ModuleMetadata(tgbot_python_v2.util.module.ModuleMetadata):
     @classmethod
     def setup_module(cls, app: Application):
         app.add_handler(CommandHandler("getlog", get_log, block=False))

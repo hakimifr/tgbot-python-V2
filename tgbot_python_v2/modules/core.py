@@ -17,8 +17,8 @@
 import sys
 import logging
 import subprocess
-import util.module
-from util.help import Help
+import tgbot_python_v2.util.module
+from tgbot_python_v2.util.help import Help
 from telegram import Update, Message
 from telegram.ext import ContextTypes, CommandHandler, Application
 
@@ -26,7 +26,7 @@ SAVED_MESSAGE_CHAT_ID = -1001607510711
 log: logging.Logger = logging.getLogger(__name__)
 
 
-class ModuleMetadata(util.module.ModuleMetadata):
+class ModuleMetadata(tgbot_python_v2.util.module.ModuleMetadata):
     @classmethod
     def setup_module(cls, app: Application):
         app.add_handler(CommandHandler("start", start, block=False))

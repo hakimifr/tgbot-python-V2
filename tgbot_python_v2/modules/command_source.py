@@ -16,8 +16,8 @@
 
 import inspect
 
-from util import module
-from util.help import Help
+from tgbot_python_v2.util import module
+from tgbot_python_v2.util.help import Help
 
 from telegram import Update, BotCommand
 from telegram.helpers import escape_markdown

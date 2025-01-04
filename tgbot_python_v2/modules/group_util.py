@@ -14,19 +14,19 @@
 #
 # Copyright (c) 2024, Firdaus Hakimi <hakimifirdaus944@gmail.com>
 
-import util.module
+import tgbot_python_v2.util.module
 
 from typing import Callable, Any
 from functools import wraps
 
-from util.help import Help
+from tgbot_python_v2.util.help import Help
 
 from telegram import Update, ChatMemberAdministrator
 from telegram.ext import ContextTypes, Application, CommandHandler
 from telegram.error import TelegramError
 
 
-class ModuleMetadata(util.module.ModuleMetadata):
+class ModuleMetadata(tgbot_python_v2.util.module.ModuleMetadata):
     @classmethod
     def setup_module(cls, app: Application):
         app.add_handler(CommandHandler("ban", ban, block=False))

@@ -20,10 +20,10 @@ import logging
 from openai import AsyncOpenAI
 
 aclient = AsyncOpenAI()
-import util.module
+import tgbot_python_v2.util.module
 
-from util.help import Help
-from util.config import Config
+from tgbot_python_v2.util.help import Help
+from tgbot_python_v2.util.config import Config
 from telegram import Update
 from telegram.ext import ContextTypes, CommandHandler, Application
 
@@ -38,7 +38,7 @@ COMPLETION_SETTINGS: dict = {
 }
 
 
-class ModuleMetadata(util.module.ModuleMetadata):
+class ModuleMetadata(tgbot_python_v2.util.module.ModuleMetadata):
     @classmethod
     def setup_module(cls, app: Application):
         app.add_handler(CommandHandler("gpt3", gpt3, block=False))

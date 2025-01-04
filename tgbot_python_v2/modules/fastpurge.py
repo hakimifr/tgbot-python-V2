@@ -20,8 +20,8 @@ import logging
 
 import telegram.error
 
-from util import module
-from util.help import Help
+from tgbot_python_v2.util import module
+from tgbot_python_v2.util.help import Help
 
 from telegram import Chat, ChatMember, ChatMemberAdministrator, ChatMemberLeft, Update, Bot
 from telegram.ext import Application, ContextTypes, CommandHandler, CallbackQueryHandler

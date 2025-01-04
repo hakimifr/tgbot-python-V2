@@ -43,16 +43,16 @@ Available methods:
 import re
 import json
 import logging
-import util.module
-from util.help import Help
-from util.config import Config
+import tgbot_python_v2.util.module
+from tgbot_python_v2.util.help import Help
+from tgbot_python_v2.util.config import Config
 from telegram import Update, Message, MessageId
 from telegram.ext import ContextTypes, CommandHandler, MessageHandler, filters, Application
 log: logging.Logger = logging.getLogger(__name__)
 config: Config = Config("rm6785_config.json")
 
 
-class ModuleMetadata(util.module.ModuleMetadata):
+class ModuleMetadata(tgbot_python_v2.util.module.ModuleMetadata):
     @classmethod
     def setup_module(cls, app: Application):
         # app.add_handler(CommandHandler("approve", approve))
@@ -202,14 +202,14 @@ async def deauthorize(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
 
 async def listauth(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     config.read_config()
-    text = "Master users \(these users are hardcoded in the codebase\):\n"  # noqa: W605
+    text = "Master users (these users are hardcoded in the codebase):\n"  # noqa: W605
     for userid in RM6785_MASTER_USER:
-        text += f"[this dude](tg://user?id={userid}) \({userid}\)\n"  # noqa: W605
+        text += f"[this dude](tg://user?id={userid}) ({userid})\n"  # noqa: W605
     text += "\n"
 
     text += "Manually authorized users:\n"
     for userid in config.config["authorized_users"]:
-        text += f"[this dude](tg://user?id={userid}) \({userid}\)\n"  # noqa: W605
+        text += f"[this dude](tg://user?id={userid}) ({userid})\n"  # noqa: W605
 
     await update.message.reply_text(text, parse_mode="MarkdownV2")
 

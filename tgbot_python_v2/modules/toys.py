@@ -30,9 +30,9 @@ import logging
 import random
 import re
 import datetime
-import util.module
-from util.help import Help
-from util.config import Config
+import tgbot_python_v2.util.module
+from tgbot_python_v2.util.help import Help
+from tgbot_python_v2.util.config import Config
 from telegram import Update, Message
 from telegram.ext import ContextTypes, CommandHandler, Application, CallbackContext
 from telegram.helpers import escape_markdown
@@ -41,7 +41,7 @@ log: logging.Logger = logging.getLogger(__name__)
 config: Config = Config("toys.json")
 
 
-class ModuleMetadata(util.module.ModuleMetadata):
+class ModuleMetadata(tgbot_python_v2.util.module.ModuleMetadata):
     @classmethod
     def setup_module(cls, app: Application):
         app.add_handler(CommandHandler("gay", random_percentage, block=False))

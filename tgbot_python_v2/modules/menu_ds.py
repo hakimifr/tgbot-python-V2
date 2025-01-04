@@ -20,9 +20,9 @@ from calendar import monthrange
 from pathlib import Path
 import logging
 
-import util.module
-from util.config import Config
-from util.help import Help
+import tgbot_python_v2.util.module
+from tgbot_python_v2.util.config import Config
+from tgbot_python_v2.util.help import Help
 from telegram import Update, Document, Message
 from telegram.ext import CommandHandler, Application, ContextTypes
 
@@ -33,7 +33,7 @@ config.write_config()
 # {"1": [file_id, unique_id]}
 
 
-class ModuleMetadata(util.module.ModuleMetadata):
+class ModuleMetadata(tgbot_python_v2.util.module.ModuleMetadata):
     @classmethod
     def setup_module(cls, app: Application):
         app.add_handler(CommandHandler("menu", menu, block=False))
@@ -51,7 +51,7 @@ async def recycle_if_possible(day: str, update: Update) -> None:
         log.info("Recycling existing file id")
         await update.message.reply_photo(Document(*config.config.get(day)))  # type: ignore
     else:
-        message: Message = await update.message.reply_photo(f"menus/{day}.png")
+        message: Message = await update.message.reply_photo(f"tgbot_python_v2/menus/{day}.png")
         add_id(day, message)
 
 
@@ -62,7 +62,7 @@ def add_id(day: str, message: Message) -> None:
 async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     # get_datetime().day
     day: str = str(get_datetime().day)
-    menu_file: Path = Path(f"menus/{day}.png")
+    menu_file: Path = Path(f"tgbot_python_v2/menus/{day}.png")
 
     if not menu_file.exists:
         await update.message.reply_text("Internal error occured")

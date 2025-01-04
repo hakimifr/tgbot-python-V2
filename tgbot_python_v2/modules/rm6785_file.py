@@ -18,7 +18,7 @@ import re
 import string
 import logging
 
-import util.module as module
+import tgbot_python_v2.util.module as module
 
 import telegram
 
@@ -26,7 +26,7 @@ from typing import Generator
 from tempfile import NamedTemporaryFile
 from traceback import format_exception
 
-from modules.rm6785 import RM6785_DEVELOPMENT_CHAT_ID
+from tgbot_python_v2.modules.rm6785 import RM6785_DEVELOPMENT_CHAT_ID
 
 from telegram import Update
 from telegram.ext import ContextTypes, Application, MessageHandler, filters

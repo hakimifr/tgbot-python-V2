@@ -16,12 +16,12 @@
 
 import re
 import logging
-import util.module
+import tgbot_python_v2.util.module
 import telegram
 import telegram.error
-from util.help import Help
-from util.config import Config
-from modules.rm6785 import RM6785_MASTER_USER
+from tgbot_python_v2.util.help import Help
+from tgbot_python_v2.util.config import Config
+from tgbot_python_v2.modules.rm6785 import RM6785_MASTER_USER
 from telegram import Update
 from telegram.ext import ContextTypes, CommandHandler, MessageHandler, Application, filters
 log: logging.Logger = logging.getLogger(__name__)
@@ -33,7 +33,7 @@ if config.config.get("gif_blocklist") is None:
     config.config["gif_blocklist"] = []
 
 
-class ModuleMetadata(util.module.ModuleMetadata):
+class ModuleMetadata(tgbot_python_v2.util.module.ModuleMetadata):
     @classmethod
     def setup_module(cls, app: Application):
         app.add_handler(CommandHandler("block", block_unblock, block=False))

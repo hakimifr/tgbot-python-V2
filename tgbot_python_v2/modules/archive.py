@@ -21,8 +21,8 @@ import telegram.error
 
 from pathlib import Path
 from pprint import pformat
-from util.help import Help
-import util.module
+from tgbot_python_v2.util.help import Help
+import tgbot_python_v2.util.module
 from zipfile import ZipFile, is_zipfile
 from tempfile import TemporaryDirectory, _TemporaryFileWrapper, NamedTemporaryFile
 from telegram import Update
@@ -32,7 +32,7 @@ from telegram.constants import FileSizeLimit
 log: logging.Logger = logging.getLogger(__name__)
 
 
-class ModuleMetadata(util.module.ModuleMetadata):
+class ModuleMetadata(tgbot_python_v2.util.module.ModuleMetadata):
     @classmethod
     def setup_module(cls, app: Application):
         app.add_handler(CommandHandler("unzip", unzip, block=False))

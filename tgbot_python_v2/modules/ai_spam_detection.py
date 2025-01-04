@@ -17,7 +17,7 @@
 import os
 import re
 import logging
-import util.module
+import tgbot_python_v2.util.module
 import telegram
 import telegram.error
 from telegram import Update
@@ -62,7 +62,7 @@ USER-SENT MESSAGE STARTS BELOW THIS LINE::
 """
 
 
-class ModuleMetadata(util.module.ModuleMetadata):
+class ModuleMetadata(tgbot_python_v2.util.module.ModuleMetadata):
     @classmethod
     def setup_module(cls, app: Application):
         if os.getenv("DISABLE_AI_SPAM_DETECTION", "0") == "1":
