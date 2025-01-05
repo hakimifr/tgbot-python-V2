@@ -14,6 +14,8 @@
 #
 # Copyright (c) 2024, Firdaus Hakimi <hakimifirdaus944@gmail.com>
 
+import inspect
+
 from pytz import timezone
 from datetime import datetime
 from calendar import monthrange
@@ -21,6 +23,7 @@ from pathlib import Path
 import logging
 
 import tgbot_python_v2.util.module
+from tgbot_python_v2 import MODULE_DIR
 from tgbot_python_v2.util.config import Config
 from tgbot_python_v2.util.help import Help
 from telegram import Update, Document, Message
@@ -51,7 +54,7 @@ async def recycle_if_possible(day: str, update: Update) -> None:
         log.info("Recycling existing file id")
         await update.message.reply_photo(Document(*config.config.get(day)))  # type: ignore
     else:
-        message: Message = await update.message.reply_photo(f"tgbot_python_v2/menus/{day}.png")
+        message: Message = await update.message.reply_photo(f"{MODULE_DIR}/menus/{day}.png")
         add_id(day, message)
 
 
@@ -62,7 +65,7 @@ def add_id(day: str, message: Message) -> None:
 async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     # get_datetime().day
     day: str = str(get_datetime().day)
-    menu_file: Path = Path(f"tgbot_python_v2/menus/{day}.png")
+    menu_file: Path = Path(f"{MODULE_DIR}/menus/{day}.png")
 
     if not menu_file.exists:
         await update.message.reply_text("Internal error occured")

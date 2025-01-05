@@ -24,6 +24,7 @@ import tgbot_python_v2.util.logging
 from importlib import import_module
 from pathlib import Path
 
+from tgbot_python_v2 import MODULE_DIR
 from tgbot_python_v2.util.module import ModuleMetadata
 
 log = logging.getLogger(__name__)
@@ -73,7 +74,7 @@ app.add_handler(CallbackQueryHandler(callback, pattern=lambda data: data == f"{m
                                      block=False))
 
 # Load modules
-mdls = tuple(Path("tgbot_python_v2/modules").glob("*.py"))
+mdls = tuple(Path(f"{MODULE_DIR}/modules").glob("*.py"))
 log.info(f"Modules found: {mdls}")
 for mdl in mdls:
     try:
@@ -89,7 +90,7 @@ for mdl in mdls:
         continue
 
     if not issubclass(mod.ModuleMetadata, ModuleMetadata):
-        log.error(f"ModuleMetadata of module '{mdl}' is not a subclass of tgbot_python_v2.tgbot_python_v2.util.module.ModuleMetadata")
+        log.error(f"ModuleMetadata of module '{mdl}' is not a subclass of tgbot_python_v2.util.module.ModuleMetadata")
         log.error(f"Refusing to load module '{mdl}'")
         continue
 
