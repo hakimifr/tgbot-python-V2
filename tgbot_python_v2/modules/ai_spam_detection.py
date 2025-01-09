@@ -21,7 +21,7 @@ import tgbot_python_v2.util.module
 import telegram
 import telegram.error
 from telegram import Update
-from telegram.ext import ContextTypes, MessageHandler, Application, filters
+from telegram.ext import ContextTypes, MessageHandler, Application, JobQueue, filters
 import google.generativeai as genai
 log: logging.Logger = logging.getLogger(__name__)
 
@@ -132,8 +132,9 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
     if fraud_status == "Yes" and confidence_rate >= 50:
         try:
             await update.message.delete()
-            await update.get_bot().send_message(update.message.chat_id,
-                                                f"Deleted message from {update.message.from_user.first_name} due to suspected fraud\n"
-                                                f"Gemini 2.0 Flash (experiment) confidence rate: {confidence_rate}%")
+            message = await update.get_bot().send_message(update.message.chat_id,
+                                                          f"Deleted message from {update.message.from_user.first_name} due to suspected fraud\n"
+                                                          f"Gemini 2.0 Flash (experiment) confidence rate: {confidence_rate}%")
+            context.job_queue.run_once(update.get_bot().delete_message, 120, [update.get_bot(), update.message.chat_id, update.message.message_id])
         except telegram.error.BadRequest:
             log.warning("Failed to delete message")
