@@ -44,8 +44,9 @@ class MarksParser(HTMLParser):
         self.in_table = False
         self.in_row = False
         self.in_exam = False
+        self.in_examinfo = False
         self.in_result = False
-        self.current_exam = None
+        self.current_exam = ""
         self.results = []
 
     def handle_starttag(self, tag, attrs):
@@ -55,8 +56,12 @@ class MarksParser(HTMLParser):
                     self.in_table = True
         if self.in_table and tag == "tr":
             self.in_row = True
-        if self.in_row and tag == "span" and ("exam" in dict(attrs).get("class", "")):
-            self.in_exam = True
+        if self.in_row and tag == "span":
+            classes = dict(attrs).get("class", "")
+            if "exam" in classes:
+                self.in_exam = True
+            if "examinfo" in classes:
+                self.in_examinfo = True
         if self.in_row and tag == "td" and ("result" in dict(attrs).get("class", "")):
             self.in_result = True
 
@@ -65,19 +70,23 @@ class MarksParser(HTMLParser):
             self.in_table = False
         if tag == "tr":
             self.in_row = False
+            self.current_exam = ""  # Reset after processing the row
         if tag == "span" and self.in_exam:
             self.in_exam = False
+        if tag == "span" and self.in_examinfo:
+            self.in_examinfo = False
         if tag == "td" and self.in_result:
             self.in_result = False
 
     def handle_data(self, data):
-        if self.in_exam:
-            self.current_exam = data.strip()
-        if self.in_result and self.current_exam:
+        if self.in_exam or self.in_examinfo:
+            self.current_exam += data.strip() + " "
+        if self.in_result and self.current_exam.strip():
             result = data.strip()
             if result:
-                self.results.append((self.current_exam, result))
-                self.current_exam = None
+                # Append trimmed exam name and result
+                self.results.append((self.current_exam.strip(), result))
+                self.current_exam = ""
 
 
 async def igcse(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -93,9 +102,7 @@ async def igcse(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
     text = escape_markdown("Candidate 0009's result (Hakimi):\n", version=2)
     for exam, result in parser.results:
-        text += "```\n"
-        text += f"*{escape_markdown(exam, version=2)}*: _{escape_markdown(result, version=2)}"
-        text += "\n```\n"
+        text += f">*{escape_markdown(exam, version=2)}*: _{escape_markdown(result, version=2)}_\n"
 
     await update.message.reply_text(text, parse_mode=ParseMode.MARKDOWN_V2)
 
