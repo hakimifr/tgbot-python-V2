@@ -90,8 +90,16 @@ class MarksParser(HTMLParser):
 
 
 async def igcse(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    if len(context.args) == 2:
+        pload = {
+            "j_username": context.args[0],
+            "j_password": context.args[1]
+        }
+    else:
+        pload = payload
+
     session = requests.Session()
-    session.post(LOGIN_URL, payload)
+    session.post(LOGIN_URL, pload)
     response = session.get(RESULTS_URL)
     if response.status_code != 200:
         await update.message.reply_text("error")
@@ -100,7 +108,11 @@ async def igcse(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     parser = MarksParser()
     parser.feed(response.content.decode())
 
-    text = escape_markdown("Candidate 0009's result (Hakimi):\n", version=2)
+    if len(context.args) != 2:
+        text = escape_markdown("Candidate 0009's result (Hakimi):\n", version=2)
+    else:
+        text = escape_markdown("Your result:\n", version=2)
+
     for exam, result in parser.results:
         text += f">*{escape_markdown(exam, version=2)}*: _{escape_markdown(result, version=2)}_\n"
 
