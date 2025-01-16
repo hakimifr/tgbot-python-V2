@@ -108,6 +108,10 @@ async def igcse(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     parser = MarksParser()
     parser.feed(response.content.decode())
 
+    if "".join(parser.results).strip() == "":
+        await update.message.reply_text("Wrong credentials")
+        return
+
     if len(context.args) != 2:
         text = escape_markdown("Candidate 0009's result (Hakimi):\n", version=2)
     else:
