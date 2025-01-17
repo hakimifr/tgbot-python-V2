@@ -89,6 +89,10 @@ class ModuleMetadata(tgbot_python_v2.util.module.ModuleMetadata):
         app.add_handler(MessageHandler(filters.TEXT, on_message, block=False), group=3)
 
 
+async def timed_deleter(context: ContextTypes.DEFAULT_TYPE) -> None:
+    await context.bot.delete_message(context.job.data[0], context.job.data[1])
+
+
 async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     assert update.message is not None
     if update.message.caption is not None:
@@ -135,6 +139,6 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
             message = await update.get_bot().send_message(update.message.chat_id,
                                                           f"Deleted message from {update.message.from_user.first_name} due to suspected fraud\n"
                                                           f"Gemini 2.0 Flash (experiment) confidence rate: {confidence_rate}%")
-            context.job_queue.run_once(update.get_bot().delete_message, 120, [update.get_bot(), update.message.chat_id, update.message.message_id])
+            context.job_queue.run_once(timed_deleter, 30, data=[message.chat_id, message.message_id])
         except telegram.error.BadRequest:
             log.warning("Failed to delete message")
