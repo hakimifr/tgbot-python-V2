@@ -25,7 +25,7 @@ from telegram.ext import ContextTypes, MessageHandler, Application, JobQueue, fi
 import google.generativeai as genai
 log: logging.Logger = logging.getLogger(__name__)
 
-GROUP_WHITELISTS: list[int] = [-1001309495065, -1001754321934, -1001805033064, -1001155763792, -1001267207006]  # r6, rm6785, ai disc, test env, rm6785 photography
+GROUP_WHITELISTS: list[int] = [-1001309495065, -1001754321934, -1001155763792, -1001267207006]  # r6, rm6785, test env, rm6785 photography
 
 base_prompt = """\
 You are an advanced fraud detection AI, tasked with analyzing user messages to determine if they contain elements of financial, cryptocurrency, or any other type of fraudulent activity.
