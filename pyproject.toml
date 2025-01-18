@@ -12,3 +12,15 @@ dependencies = [
     "pytz>=2024.2",
     "requests>=2.32.3",
 ]
+
+[dependency-groups]
+dev = [
+    "black>=24.10.0",
+    "isort>=5.13.2",
+]
+
+[tool.isort]
+profile = "black"
+
+[tool.black]
+line-length = 120

@@ -15,12 +15,15 @@
 # Copyright (c) 2024, Firdaus Hakimi <hakimifirdaus944@gmail.com>
 
 import logging
-import tgbot_python_v2.util.module
 from pathlib import Path
+
 from telegram import Update
-from tgbot_python_v2.util.help import Help
-from telegram.ext import ContextTypes, CommandHandler, Application
+from telegram.ext import Application, CommandHandler, ContextTypes
+
+import tgbot_python_v2.util.module
 from tgbot_python_v2.modules.rm6785 import RM6785_MASTER_USER
+from tgbot_python_v2.util.help import Help
+
 log: logging.Logger = logging.getLogger(__name__)
 TOKEN: str = Path(".token").read_text()
 
@@ -47,7 +50,7 @@ async def get_log(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if update.message.from_user.id not in RM6785_MASTER_USER:
         await update.message.reply_text("You're not allowed to do this")
         return
-    
+
     await update.message.reply_document(tmp_file)
 
     tmp_file.unlink()

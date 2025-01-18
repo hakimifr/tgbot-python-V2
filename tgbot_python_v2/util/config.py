@@ -14,17 +14,19 @@
 #
 # Copyright (c) 2024, Firdaus Hakimi <hakimifirdaus944@gmail.com>
 
+import atexit
+import json
+import logging
 import os
 import time
-import json
-import atexit
-import logging
 from pathlib import Path
+
 CONFIG_FILE_PATH_PREFIX: str = ""
 log: logging.Logger = logging.getLogger(__name__)
 
 if os.getenv("CONFIG_PERSIST_PARTITION"):
     CONFIG_FILE_PATH_PREFIX = os.getenv("CONFIG_PERSIST_PARTITION", "")
+
 
 def write_lock_file(file: Path) -> None:
     log.info(f"Creating lock file: '{file.as_posix()}.lock'")
@@ -83,6 +85,7 @@ class Config:
             if self.closed:
                 raise RuntimeError("This config instance is already closed")
             return method(self, *args, **kwargs)
+
         return wrapper
 
     def on_exit(self) -> None:
@@ -127,4 +130,3 @@ class Config:
         remove_lock_file(Path(self.file))
         Config.active_config.remove(self.file)
         self.closed = True
-

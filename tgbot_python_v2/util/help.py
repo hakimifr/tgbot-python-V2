@@ -14,10 +14,12 @@
 #
 # Copyright (c) 2024, Firdaus Hakimi <hakimifirdaus944@gmail.com>
 
-import os
 import asyncio
 import logging
+import os
+
 from telegram import Bot, BotCommand
+
 log: logging.Logger = logging.getLogger(__name__)
 
 try:
@@ -26,8 +28,10 @@ except ImportError:
     if not (TOKEN := os.getenv("BOT_TOKEN")):
         log.critical("Failed to get bot token")
 
+
 class Help:
     """Class for storing help strings. Class methods only."""
+
     bot: Bot = Bot(TOKEN)
     loop: asyncio.AbstractEventLoop = asyncio.new_event_loop()
     help_messages: dict = {}
@@ -39,7 +43,9 @@ class Help:
         # commands: list[BotCommand] = []
         # for cmd in cls.help_messages.keys():
         #     commands.append(BotCommand(cmd, cls.help_messages.get(cmd)))
-        commands: list[BotCommand] = [BotCommand(cmd, cls.help_messages.get(cmd, "")) for cmd in cls.help_messages.keys()]
+        commands: list[BotCommand] = [
+            BotCommand(cmd, cls.help_messages.get(cmd, "")) for cmd in cls.help_messages.keys()
+        ]
 
         try:
             log.info("Updating bot cmd")

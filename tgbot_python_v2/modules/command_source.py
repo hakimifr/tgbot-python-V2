@@ -16,12 +16,12 @@
 
 import inspect
 
+from telegram import BotCommand, Update
+from telegram.ext import Application, BaseHandler, CommandHandler, ContextTypes
+from telegram.helpers import escape_markdown
+
 from tgbot_python_v2.util import module
 from tgbot_python_v2.util.help import Help
-
-from telegram import Update, BotCommand
-from telegram.helpers import escape_markdown
-from telegram.ext import Application, ContextTypes, BaseHandler, CommandHandler
 
 
 class ModuleMetadata(module.ModuleMetadata):
@@ -44,9 +44,10 @@ async def get_command_source(update: Update, context: ContextTypes.DEFAULT_TYPE)
                 continue
 
             if target_command in handler.commands:
-                await update.message.reply_text("```python\n"
-                                                + escape_markdown(inspect.getsource(handler.callback), version=2)
-                                                + "\n```", parse_mode="MarkdownV2")
+                await update.message.reply_text(
+                    "```python\n" + escape_markdown(inspect.getsource(handler.callback), version=2) + "\n```",
+                    parse_mode="MarkdownV2",
+                )
                 return
 
     await update.message.reply_text("Error: command does not exist.")

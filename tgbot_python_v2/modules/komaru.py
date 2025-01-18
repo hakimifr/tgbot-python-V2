@@ -14,17 +14,22 @@
 #
 # Copyright (c) 2024, Firdaus Hakimi <hakimifirdaus944@gmail.com>
 
-import random
 import asyncio
 import logging
-import tgbot_python_v2.util.module
-
-from tgbot_python_v2.util.help import Help
-from tgbot_python_v2.util.config import Config
+import random
 
 from telegram import Update
-from telegram.ext import ContextTypes, CommandHandler, Application, filters, MessageHandler
+from telegram.ext import (
+    Application,
+    CommandHandler,
+    ContextTypes,
+    MessageHandler,
+    filters,
+)
 
+import tgbot_python_v2.util.module
+from tgbot_python_v2.util.config import Config
+from tgbot_python_v2.util.help import Help
 
 LISTEN_MODE: bool = False
 LISTEN_CHAT_ID: int = 0
@@ -106,9 +111,11 @@ async def komaru_listener(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     config_db.config[update.message.animation.file_unique_id] = update.message.animation.file_id
     await update.message.copy(KOMARU_CHANNEL_ID)
-    await update.message.reply_text(f"Added to database!\n"
-                                    f"file_unique_id: {update.message.animation.file_unique_id}\n"
-                                    f"file_id: {update.message.animation.file_id}\n")
+    await update.message.reply_text(
+        f"Added to database!\n"
+        f"file_unique_id: {update.message.animation.file_unique_id}\n"
+        f"file_id: {update.message.animation.file_id}\n"
+    )
 
 
 async def komaru_channel_listener(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -116,10 +123,12 @@ async def komaru_channel_listener(update: Update, context: ContextTypes.DEFAULT_
         await update.channel_post.delete()
     else:
         config_db.config[update.channel_post.animation.file_unique_id] = update.channel_post.animation.file_id
-        msg = await update.channel_post.reply_text(f"Added to database!\n"
-                                                   f"file_unique_id: {update.channel_post.animation.file_unique_id}\n"
-                                                   f"file_id: {update.channel_post.animation.file_id}\n"
-                                                   f"This message will auto-delete in 5 seconds.")
+        msg = await update.channel_post.reply_text(
+            f"Added to database!\n"
+            f"file_unique_id: {update.channel_post.animation.file_unique_id}\n"
+            f"file_id: {update.channel_post.animation.file_id}\n"
+            f"This message will auto-delete in 5 seconds."
+        )
         await asyncio.sleep(5)
         await msg.delete()
 
@@ -189,7 +198,9 @@ async def addtrigger(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if keyword in config_db.config[update.message.reply_to_message.animation.file_unique_id]["trigger_keywords"]:
             errors.append(f"Keyword '{keyword}' already exists")
         else:
-            config_db.config[update.message.reply_to_message.animation.file_unique_id]["trigger_keywords"].append(keyword)
+            config_db.config[update.message.reply_to_message.animation.file_unique_id]["trigger_keywords"].append(
+                keyword
+            )
 
     if len(errors) > 0:
         joint: str = "\n".join(errors)
@@ -222,7 +233,9 @@ async def removetrigger(update: Update, context: ContextTypes.DEFAULT_TYPE):
     errors: list[str] = []
     for keyword in context.args:
         if keyword in config_db.config[update.message.reply_to_message.animation.file_unique_id]["trigger_keywords"]:
-            config_db.config[update.message.reply_to_message.animation.file_unique_id]["trigger_keywords"].remove(keyword)
+            config_db.config[update.message.reply_to_message.animation.file_unique_id]["trigger_keywords"].remove(
+                keyword
+            )
         else:
             errors.append(f"Keyword '{keyword}' does not exist")
 
@@ -266,13 +279,10 @@ async def trigger_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def komaru_random(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.message.reply_to_message:
-        await update.message.reply_animation(
-            config_db.config[random.choice(tuple(config_db.config.keys()))]["file_id"]
-        )
+        await update.message.reply_animation(config_db.config[random.choice(tuple(config_db.config.keys()))]["file_id"])
     else:
-        await update.message.reply_animation(
-            config_db.config[random.choice(tuple(config_db.config.keys()))]["file_id"]
-        )
+        await update.message.reply_animation(config_db.config[random.choice(tuple(config_db.config.keys()))]["file_id"])
+
 
 Help.register_help("toggleupdatekomaru", "Toggle Komaru updater listener")
 Help.register_help("countkomarugifs", "Count number of komaru gifs in database")
@@ -282,5 +292,3 @@ Help.register_help("unwhitelist", "Unwhitelist the chat from komary keyword trig
 Help.register_help("addtrigger", "Add keyword(s) to be triggered for a gif")
 Help.register_help("removetrigger", "Remove keyword(s) trigger from a gif")
 Help.register_help("komaru", "Get a random komaru GIF")
-
-

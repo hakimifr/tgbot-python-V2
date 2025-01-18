@@ -14,28 +14,25 @@
 #
 # Copyright (c) 2024, Firdaus Hakimi <hakimifirdaus944@gmail.com>
 
+import logging
 import os
 import time
-import logging
+
 from openai import AsyncOpenAI
 
 aclient = AsyncOpenAI()
-import tgbot_python_v2.util.module
-
-from tgbot_python_v2.util.help import Help
-from tgbot_python_v2.util.config import Config
 from telegram import Update
-from telegram.ext import ContextTypes, CommandHandler, Application
+from telegram.ext import Application, CommandHandler, ContextTypes
+
+import tgbot_python_v2.util.module
+from tgbot_python_v2.util.config import Config
+from tgbot_python_v2.util.help import Help
 
 log: logging.Logger = logging.getLogger(__name__)
 API_KEY_OK = True
 RESTRICTED_CHATS_KEY: str = "restricted_chats"
 LIMIT_IN_SEC: int = 75
-COMPLETION_SETTINGS: dict = {
-    "model": "gpt-3.5-turbo",
-    "max_tokens": 2000,
-    "temperature": 0.2
-}
+COMPLETION_SETTINGS: dict = {"model": "gpt-3.5-turbo", "max_tokens": 2000, "temperature": 0.2}
 
 
 class ModuleMetadata(tgbot_python_v2.util.module.ModuleMetadata):
@@ -65,6 +62,7 @@ def check_key(function):
             await function(*arg, **kwargs)
         else:
             log.error("Module was triggered, but token is not available")
+
     return wrapper
 
 
@@ -72,8 +70,9 @@ def check_key(function):
 async def gpt3(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if timestamp := config.config[RESTRICTED_CHATS_KEY].get(str(update.message.chat_id)):
         if time.time() - timestamp < LIMIT_IN_SEC:
-            await update.message.reply_text("Please wait for a few mins before trying again.\n"
-                                            f"Currently limit is set to: {LIMIT_IN_SEC}s")
+            await update.message.reply_text(
+                "Please wait for a few mins before trying again.\n" f"Currently limit is set to: {LIMIT_IN_SEC}s"
+            )
             return
 
     msg = await update.message.reply_text("Generating response...")
@@ -83,13 +82,15 @@ async def gpt3(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         return
 
     try:
-        aresult = await aclient.chat.completions.create(messages=[
-                                                        {
-                                                           "role": "user",
-                                                           "content": f"{' '.join(context.args)}",
-                                                        }
-                                                      ],
-                                                      **COMPLETION_SETTINGS)
+        aresult = await aclient.chat.completions.create(
+            messages=[
+                {
+                    "role": "user",
+                    "content": f"{' '.join(context.args)}",
+                }
+            ],
+            **COMPLETION_SETTINGS,
+        )
     except Exception as e:
         log.error(e)
         await msg.edit_text(f"{e}")

@@ -14,17 +14,18 @@
 #
 # Copyright (c) 2024, Firdaus Hakimi <hakimifirdaus944@gmail.com>
 
-import os
 import logging
-import requests
-import tgbot_python_v2.util.module
-
+import os
 from html.parser import HTMLParser
-from tgbot_python_v2.util.help import Help
+
+import requests
 from telegram import Update
-from telegram.helpers import escape_markdown
 from telegram.constants import ParseMode
-from telegram.ext import ContextTypes, CommandHandler, Application
+from telegram.ext import Application, CommandHandler, ContextTypes
+from telegram.helpers import escape_markdown
+
+import tgbot_python_v2.util.module
+from tgbot_python_v2.util.help import Help
 
 SAVED_MESSAGE_CHAT_ID = -1001607510711
 log: logging.Logger = logging.getLogger(__name__)
@@ -32,10 +33,7 @@ log: logging.Logger = logging.getLogger(__name__)
 LOGIN_URL: str = "https://myresults.cie.org.uk/cie-candidate-results/j_spring_security_check"
 RESULTS_URL: str = "https://myresults.cie.org.uk/cie-candidate-results/results"
 
-payload: dict[str, str] = {
-    "j_username": os.getenv("IGCSE_USERNAME", ""),
-    "j_password": os.getenv("IGCSE_PASSWORD", "")
-}
+payload: dict[str, str] = {"j_username": os.getenv("IGCSE_USERNAME", ""), "j_password": os.getenv("IGCSE_PASSWORD", "")}
 
 
 class MarksParser(HTMLParser):
@@ -91,10 +89,7 @@ class MarksParser(HTMLParser):
 
 async def igcse(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if len(context.args) == 2:
-        pload = {
-            "j_username": context.args[0],
-            "j_password": context.args[1]
-        }
+        pload = {"j_username": context.args[0], "j_password": context.args[1]}
     else:
         pload = payload
 

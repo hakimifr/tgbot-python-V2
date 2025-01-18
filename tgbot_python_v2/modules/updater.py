@@ -14,20 +14,22 @@
 #
 # Copyright (c) 2024, Firdaus Hakimi <hakimifirdaus944@gmail.com>
 
-import os
-import sys
 import atexit
 import logging
-import telegram.error
-import tgbot_python_v2.util.module
-
+import os
+import sys
+from os import execve, system
 from time import sleep
-from os import system, execve
-from telegram import Update, Message, InlineKeyboardMarkup, InlineKeyboardButton
-from tgbot_python_v2.util.help import Help
-from tgbot_python_v2.util.config import Config
-from telegram.ext import CallbackContext, CommandHandler, ContextTypes, Application
+
+import telegram.error
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Message, Update
+from telegram.ext import Application, CallbackContext, CommandHandler, ContextTypes
+
+import tgbot_python_v2.util.module
 from tgbot_python_v2.modules.rm6785 import RM6785_MASTER_USER
+from tgbot_python_v2.util.config import Config
+from tgbot_python_v2.util.help import Help
+
 log: logging.Logger = logging.getLogger(__name__)
 config: Config = Config("updater.json")
 name: str = __name__
@@ -70,9 +72,9 @@ async def finish_update(app: Application) -> None:
         log.info("** Bot was not updated: Restart for other reason")
 
     try:
-        await app.bot.edit_message_text("Bot restarted",
-                                        chat_id=config.config["chat_id"],
-                                        message_id=config.config["message_id"])
+        await app.bot.edit_message_text(
+            "Bot restarted", chat_id=config.config["chat_id"], message_id=config.config["message_id"]
+        )
     except telegram.error.BadRequest as e:
         log.error("Failed to edit update message, perhaps it's already edited?")
         log.error("Logging traceback.")
@@ -88,19 +90,14 @@ async def update(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         return
 
     keyboard: list[list[InlineKeyboardButton]] = [
-        [
-            InlineKeyboardButton("Confirm update", callback_data=f"{__name__}:confirm_update")
-        ]
+        [InlineKeyboardButton("Confirm update", callback_data=f"{__name__}:confirm_update")]
     ]
-    await update.message.reply_text("Press this button to confirm",
-                                        reply_markup=InlineKeyboardMarkup(keyboard)
-                                    )
+    await update.message.reply_text("Press this button to confirm", reply_markup=InlineKeyboardMarkup(keyboard))
 
 
 async def confirm_update(update: Update, context: CallbackContext) -> None:
     if update.callback_query.from_user.id not in RM6785_MASTER_USER:
-        await update.callback_query.answer(text="You're not allowed to do this.",
-                                           show_alert=True)
+        await update.callback_query.answer(text="You're not allowed to do this.", show_alert=True)
         return
 
     await update_start(update, context)
@@ -121,7 +118,7 @@ async def update_start(update: Update, context: CallbackContext) -> None:
         "should_finish_restart": True,
         "was_updated": True,
         "chat_id": update.callback_query.message.chat_id,
-        "message_id": update.callback_query.message.id
+        "message_id": update.callback_query.message.id,
     }
     config.write_config()
 
@@ -153,7 +150,7 @@ async def restart(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "should_finish_restart": True,
         "was_updated": False,
         "chat_id": update.message.chat.id,
-        "message_id": message.id
+        "message_id": message.id,
     }
     config.write_config()
 

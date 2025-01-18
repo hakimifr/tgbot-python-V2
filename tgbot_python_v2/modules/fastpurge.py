@@ -14,17 +14,23 @@
 #
 # Copyright (c) 2024, Firdaus Hakimi <hakimifirdaus944@gmail.com>
 
+import logging
 import os
 import time
-import logging
 
 import telegram.error
+from telegram import (
+    Bot,
+    Chat,
+    ChatMember,
+    ChatMemberAdministrator,
+    ChatMemberLeft,
+    Update,
+)
+from telegram.ext import Application, CallbackQueryHandler, CommandHandler, ContextTypes
 
 from tgbot_python_v2.util import module
 from tgbot_python_v2.util.help import Help
-
-from telegram import Chat, ChatMember, ChatMemberAdministrator, ChatMemberLeft, Update, Bot
-from telegram.ext import Application, ContextTypes, CommandHandler, CallbackQueryHandler
 
 TOKEN_OK = True
 log: logging.Logger = logging.getLogger(__name__)
@@ -36,7 +42,9 @@ class ModuleMetadata(module.ModuleMetadata):
         # Guard against bot api lower than 7.0
         if telegram.__bot_api_version_info__ < (7, 0):
             log.error("This module requires telegram api 7.0 or higher!")
-            log.error("Please run pip install -r requirements.txt, as PTB version is pinned to 20.8 (bot api 7.0) there")
+            log.error(
+                "Please run pip install -r requirements.txt, as PTB version is pinned to 20.8 (bot api 7.0) there"
+            )
             log.error("Refusing to register handlers")
             return
 
@@ -66,10 +74,7 @@ async def anonfastpurge_handler(update: Update, context: ContextTypes.DEFAULT_TY
     start_id = int(callback_data.split(":")[1].split("=")[1])
     end_id = int(callback_data.split(":")[2].split("=")[1])
 
-    time_taken = await _purge(update.effective_chat.id,
-                              start_id,
-                              end_id,
-                              update.get_bot())
+    time_taken = await _purge(update.effective_chat.id, start_id, end_id, update.get_bot())
 
     await update.callback_query.edit_message_text(f"Purged {end_id - start_id} messages in {time_taken:.3f}s")
 
@@ -85,20 +90,19 @@ async def anonfastpurge(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("Reply to a message smh")
         return
 
-    callback_data = "{}:startpurge={}:endpurge={}".format(__name__,
-                                                          update.message.reply_to_message.id,
-                                                          update.message.id)
+    callback_data = "{}:startpurge={}:endpurge={}".format(
+        __name__, update.message.reply_to_message.id, update.message.id
+    )
 
-    markup: list[list[telegram.InlineKeyboardButton]] = [[
-        telegram.InlineKeyboardButton("Yes", callback_data=callback_data)
-    ]]
+    markup: list[list[telegram.InlineKeyboardButton]] = [
+        [telegram.InlineKeyboardButton("Yes", callback_data=callback_data)]
+    ]
 
-    await update.message.reply_text("Press this button to confirm you're an admin",
-                                    reply_markup=telegram.InlineKeyboardMarkup(markup))
+    await update.message.reply_text(
+        "Press this button to confirm you're an admin", reply_markup=telegram.InlineKeyboardMarkup(markup)
+    )
 
-    context.application.add_handler(CallbackQueryHandler(anonfastpurge_handler,
-                                                         pattern=callback_data,
-                                                         block=False))
+    context.application.add_handler(CallbackQueryHandler(anonfastpurge_handler, pattern=callback_data, block=False))
 
 
 async def fastpurge(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -110,21 +114,24 @@ async def fastpurge(update: Update, context: ContextTypes.DEFAULT_TYPE):
     admins: tuple[ChatMemberAdministrator] = await update.effective_chat.get_administrators()  # type: ignore
     log.info(f"Chat admins: {admins}")
     if not any(update.effective_user.id == admin.user.id for admin in admins):
-        await update.message.reply_text("You're not admin smh\n"
-                                        "If you are anonymous admin, please use /anonfastpurge\n"
-                                        "Technically it can be combined into this command, but this was meant to "
-                                        "avoid spamming telegram server, to prevent the bot from getting timed out.")
+        await update.message.reply_text(
+            "You're not admin smh\n"
+            "If you are anonymous admin, please use /anonfastpurge\n"
+            "Technically it can be combined into this command, but this was meant to "
+            "avoid spamming telegram server, to prevent the bot from getting timed out."
+        )
         return
     if not any(update.get_bot().id == admin.user.id for admin in admins):
         await update.message.reply_text("I'm not admin smh")
         return
 
-    message = await update.message.reply_text(f"Purging {update.message.id - update.message.reply_to_message.id} messages")
+    message = await update.message.reply_text(
+        f"Purging {update.message.id - update.message.reply_to_message.id} messages"
+    )
 
-    time_taken = await _purge(update.effective_chat.id,
-                              update.message.reply_to_message.id,
-                              update.message.id,
-                              update.get_bot())
+    time_taken = await _purge(
+        update.effective_chat.id, update.message.reply_to_message.id, update.message.id, update.get_bot()
+    )
     await message.edit_text(f"Purged {update.message.id - update.message.reply_to_message.id} in {time_taken:.3f}s")
 
 
@@ -132,7 +139,7 @@ async def _purge(chat_id: int, start_message_id: int, end_message_id: int, bot: 
     """
     Purge messages from a chat.
 
-    This function deletes messages in a chat from a given start message ID to a stop message ID. 
+    This function deletes messages in a chat from a given start message ID to a stop message ID.
     It returns the time taken to complete the purge.
 
     Args:

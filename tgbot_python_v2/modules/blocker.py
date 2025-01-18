@@ -14,16 +14,25 @@
 #
 # Copyright (c) 2024, Firdaus Hakimi <hakimifirdaus944@gmail.com>
 
-import re
 import logging
-import tgbot_python_v2.util.module
+import re
+
 import telegram
 import telegram.error
-from tgbot_python_v2.util.help import Help
-from tgbot_python_v2.util.config import Config
-from tgbot_python_v2.modules.rm6785 import RM6785_MASTER_USER
 from telegram import Update
-from telegram.ext import ContextTypes, CommandHandler, MessageHandler, Application, filters
+from telegram.ext import (
+    Application,
+    CommandHandler,
+    ContextTypes,
+    MessageHandler,
+    filters,
+)
+
+import tgbot_python_v2.util.module
+from tgbot_python_v2.modules.rm6785 import RM6785_MASTER_USER
+from tgbot_python_v2.util.config import Config
+from tgbot_python_v2.util.help import Help
+
 log: logging.Logger = logging.getLogger(__name__)
 
 config: Config = Config("sticker-blocklist.json")

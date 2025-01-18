@@ -14,17 +14,25 @@
 #
 # Copyright (c) 2024, Firdaus Hakimi <hakimifirdaus944@gmail.com>
 
-import sys
 import logging
-import requests
 import subprocess
-import tgbot_python_v2.util.module
-from tgbot_python_v2.util.help import Help
-from tgbot_python_v2.util.config import Config
-from tgbot_python_v2.modules.rm6785 import RM6785_CHANNEL_ID
+import sys
+
+import requests
 from telegram import Update
-from telegram.ext import ContextTypes, CommandHandler, MessageHandler, filters, Application
+from telegram.ext import (
+    Application,
+    CommandHandler,
+    ContextTypes,
+    MessageHandler,
+    filters,
+)
 from telegram.helpers import escape_markdown
+
+import tgbot_python_v2.util.module
+from tgbot_python_v2.modules.rm6785 import RM6785_CHANNEL_ID
+from tgbot_python_v2.util.config import Config
+from tgbot_python_v2.util.help import Help
 
 main_log: logging.Logger = logging.getLogger(__file__)
 auto_forward_state: bool = False
@@ -42,9 +50,9 @@ class ModuleMetadata(tgbot_python_v2.util.module.ModuleMetadata):
 
 async def neofetch(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     output: bytes = subprocess.check_output(["bin/neofetch", "--stdout"] + context.args)
-    await update.message.reply_text("```\n"
-                                    + escape_markdown(output.decode(sys.stdout.encoding))
-                                    + "\n```", parse_mode="MarkdownV2")
+    await update.message.reply_text(
+        "```\n" + escape_markdown(output.decode(sys.stdout.encoding)) + "\n```", parse_mode="MarkdownV2"
+    )
 
 
 async def magisk(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:

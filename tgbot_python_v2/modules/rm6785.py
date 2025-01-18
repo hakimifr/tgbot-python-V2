@@ -40,14 +40,23 @@ Available methods:
         List authorized users.
 """
 
-import re
 import json
 import logging
+import re
+
+from telegram import Message, MessageId, Update
+from telegram.ext import (
+    Application,
+    CommandHandler,
+    ContextTypes,
+    MessageHandler,
+    filters,
+)
+
 import tgbot_python_v2.util.module
-from tgbot_python_v2.util.help import Help
 from tgbot_python_v2.util.config import Config
-from telegram import Update, Message, MessageId
-from telegram.ext import ContextTypes, CommandHandler, MessageHandler, filters, Application
+from tgbot_python_v2.util.help import Help
+
 log: logging.Logger = logging.getLogger(__name__)
 config: Config = Config("rm6785_config.json")
 
@@ -95,6 +104,7 @@ if config.config.get("authorized_users") is None:
 def check(count_init=False, reply_init=False):
     def decorator(func):
         """Common checks for most RM6785's methods."""
+
         async def wrapper(update: Update, context: ContextTypes.DEFAULT_TYPE):
             # Make sure we're in rm6785 chat
             if update.effective_chat.id != RM6785_DEVELOPMENT_CHAT_ID:
@@ -122,7 +132,9 @@ def check(count_init=False, reply_init=False):
             if reply_init and count_init:
                 return await func(update, context, count)
             return await func(update, context)
+
         return wrapper
+
     return decorator
 
 
@@ -253,8 +265,7 @@ async def delchmsg(up: Update, ctx: ContextTypes.DEFAULT_TYPE) -> None:
         await up.message.reply_text("Invalid link/ID")
         return
 
-    await up.get_bot().delete_message(chat_id=RM6785_CHANNEL_ID,
-                                      message_id=match.group(1))
+    await up.get_bot().delete_message(chat_id=RM6785_CHANNEL_ID, message_id=match.group(1))
     await up.message.reply_text("Message deleted")
 
 
@@ -262,10 +273,13 @@ async def report(up: Update, ctx: ContextTypes.DEFAULT_TYPE) -> None:
     if up.message.chat_id != REALME6_GROUP_ID:
         return
 
-    await up.get_bot().send_message(REALME6_ADMIN_GROUP_ID, "!New report!\n"
-                                                            f"Message link: "
-                                                            f"https://t.me/c/{str(REALME6_GROUP_ID).removeprefix('-100')}"
-                                                            f"/{up.message.id}")
+    await up.get_bot().send_message(
+        REALME6_ADMIN_GROUP_ID,
+        "!New report!\n"
+        f"Message link: "
+        f"https://t.me/c/{str(REALME6_GROUP_ID).removeprefix('-100')}"
+        f"/{up.message.id}",
+    )
     await up.message.reply_to_message.forward(REALME6_ADMIN_GROUP_ID)
     await up.message.reply_text("Message forwarded to admin group")
 

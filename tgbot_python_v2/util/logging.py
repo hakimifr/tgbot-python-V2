@@ -14,15 +14,14 @@
 #
 # Copyright (c) 2024, Firdaus Hakimi <hakimifirdaus944@gmail.com>
 
-import os
 import logging
+import os
 
 GLOBAL_DEBUG: bool = False
 if os.getenv("TGBOT_DEBUG") is not None:
     GLOBAL_DEBUG = True
 
-log_additional_args: dict = {"filename": "bot.log",
-                             "level": logging.INFO}
+log_additional_args: dict = {"filename": "bot.log", "level": logging.INFO}
 if GLOBAL_DEBUG:
     log_additional_args.clear()
     log_additional_args.update({"level": logging.DEBUG})
@@ -47,7 +46,7 @@ class ColouredFormatter(logging.Formatter):
         logging.INFO: green + format_str + reset,
         logging.WARNING: yellow + format_str + reset,
         logging.ERROR: red + format_str + reset,
-        logging.CRITICAL: bold_red + format_str + reset
+        logging.CRITICAL: bold_red + format_str + reset,
     }
 
     def format(self, record: logging.LogRecord):
@@ -59,8 +58,7 @@ class ColouredFormatter(logging.Formatter):
         return formatter.format(record)
 
 
-logging.basicConfig(format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
-                    **log_additional_args)
+logging.basicConfig(format="%(asctime)s [%(levelname)s] %(name)s: %(message)s", **log_additional_args)
 
 
 for handler in logging.root.handlers:

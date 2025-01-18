@@ -14,21 +14,23 @@
 #
 # Copyright (c) 2024, Firdaus Hakimi <hakimifirdaus944@gmail.com>
 
-import re
 import logging
-import telegram
-import telegram.error
-
+import re
 from pathlib import Path
 from pprint import pformat
-from tgbot_python_v2.util.help import Help
-import tgbot_python_v2.util.module
+from tempfile import NamedTemporaryFile, TemporaryDirectory, _TemporaryFileWrapper
 from zipfile import ZipFile, is_zipfile
-from tempfile import TemporaryDirectory, _TemporaryFileWrapper, NamedTemporaryFile
+
+import telegram
+import telegram.error
 from telegram import Update
-from telegram.ext import ContextTypes, Application, CommandHandler
-from telegram.helpers import escape_markdown
 from telegram.constants import FileSizeLimit
+from telegram.ext import Application, CommandHandler, ContextTypes
+from telegram.helpers import escape_markdown
+
+import tgbot_python_v2.util.module
+from tgbot_python_v2.util.help import Help
+
 log: logging.Logger = logging.getLogger(__name__)
 
 
@@ -39,9 +41,13 @@ class ModuleMetadata(tgbot_python_v2.util.module.ModuleMetadata):
         app.add_handler(CommandHandler("unzipl", unzip, block=False))
 
 
-async def extract_zip(file: telegram.File, entry_list: list[str] | None,  # type: ignore
-                      update: Update, context: ContextTypes.DEFAULT_TYPE,
-                      just_list: bool = False) -> None:
+async def extract_zip(
+    file: telegram.File,
+    entry_list: list[str] | None,  # type: ignore
+    update: Update,
+    context: ContextTypes.DEFAULT_TYPE,
+    just_list: bool = False,
+) -> None:
     if entry_list is None:
         entry_list: list[str] = []
 
@@ -55,8 +61,7 @@ async def extract_zip(file: telegram.File, entry_list: list[str] | None,  # type
         extract_all: bool = False
 
     if file.file_size > FileSizeLimit.FILESIZE_DOWNLOAD:
-        await message.edit_text("Sorry, bot cannot download file larger "
-                                f"than {FileSizeLimit.FILESIZE_DOWNLOAD}")
+        await message.edit_text("Sorry, bot cannot download file larger " f"than {FileSizeLimit.FILESIZE_DOWNLOAD}")
         tmpfile.close()
         tmpdir.cleanup()
         return
@@ -71,8 +76,7 @@ async def extract_zip(file: telegram.File, entry_list: list[str] | None,  # type
     zip: ZipFile = ZipFile(zipfile)
     if just_list:
         await message.edit_text(
-            "```python\n" + escape_markdown(pformat(zip.namelist()), version=2)
-            + "\n```", parse_mode="MarkdownV2"
+            "```python\n" + escape_markdown(pformat(zip.namelist()), version=2) + "\n```", parse_mode="MarkdownV2"
         )
         tmpfile.close()
         tmpdir.cleanup()
@@ -97,10 +101,8 @@ async def extract_zip(file: telegram.File, entry_list: list[str] | None,  # type
         file_to_upload_entry: list[str] = exist_entry
 
     for entry in file_to_upload_entry:
-        if (Path(tmpdir.name).joinpath(entry).stat().st_size
-                > FileSizeLimit.FILESIZE_UPLOAD):
-            log.warning(f"File {file} exceed Telegram upload size "
-                        f"limit of {FileSizeLimit.FILESIZE_UPLOAD}")
+        if Path(tmpdir.name).joinpath(entry).stat().st_size > FileSizeLimit.FILESIZE_UPLOAD:
+            log.warning(f"File {file} exceed Telegram upload size " f"limit of {FileSizeLimit.FILESIZE_UPLOAD}")
             oversized_files.append(entry)
             continue
 
@@ -113,15 +115,14 @@ async def extract_zip(file: telegram.File, entry_list: list[str] | None,  # type
             await update.message.reply_document(
                 Path(tmpdir.name).joinpath(entry),
                 caption="`" + escape_markdown(entry, version=2) + "`",
-                parse_mode="MarkdownV2"
+                parse_mode="MarkdownV2",
             )
         except telegram.error.TelegramError:
             log.error(f"Failed to upload {entry}")
 
     text: str = "Finished processing.\n"
     if len(oversized_files) > 0:
-        text += "Cannot send the following files because they " \
-                "exceed the max size:\n"
+        text += "Cannot send the following files because they " "exceed the max size:\n"
         for ofile in oversized_files:
             text += f"- {ofile}\n"
 

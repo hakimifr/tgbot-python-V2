@@ -14,18 +14,26 @@
 #
 # Copyright (c) 2024, Firdaus Hakimi <hakimifirdaus944@gmail.com>
 
+import logging
 import os
 import re
-import logging
-import tgbot_python_v2.util.module
+
+import google.generativeai as genai
 import telegram
 import telegram.error
 from telegram import Update
-from telegram.ext import ContextTypes, MessageHandler, Application, JobQueue, filters
-import google.generativeai as genai
+from telegram.ext import Application, ContextTypes, JobQueue, MessageHandler, filters
+
+import tgbot_python_v2.util.module
+
 log: logging.Logger = logging.getLogger(__name__)
 
-GROUP_WHITELISTS: list[int] = [-1001309495065, -1001754321934, -1001155763792, -1001267207006]  # r6, rm6785, test env, rm6785 photography
+GROUP_WHITELISTS: list[int] = [
+    -1001309495065,
+    -1001754321934,
+    -1001155763792,
+    -1001267207006,
+]  # r6, rm6785, test env, rm6785 photography
 
 base_prompt = """\
 You are an advanced fraud detection AI, tasked with analyzing user messages to determine if they contain elements of financial, cryptocurrency, or any other type of fraudulent activity.
@@ -81,10 +89,7 @@ class ModuleMetadata(tgbot_python_v2.util.module.ModuleMetadata):
             "response_mime_type": "text/plain",
         }
 
-        model = genai.GenerativeModel(
-            model_name="gemini-2.0-flash-exp",
-            generation_config=generation_config
-        )
+        model = genai.GenerativeModel(model_name="gemini-2.0-flash-exp", generation_config=generation_config)
 
         app.add_handler(MessageHandler(filters.TEXT, on_message, block=False), group=3)
 
@@ -123,10 +128,7 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
         log.info("something went wrong with regexing Gemini's response!")
         return
 
-    result = {
-        'Fraud_detected': match.group(1),
-        'Confidence_rate': int(match.group(2))
-    }
+    result = {"Fraud_detected": match.group(1), "Confidence_rate": int(match.group(2))}
 
     fraud_status, confidence_rate = result.values()
     log.info(f"text: {text}")
@@ -136,9 +138,11 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
     if fraud_status == "Yes" and confidence_rate >= 50:
         try:
             await update.message.delete()
-            message = await update.get_bot().send_message(update.message.chat_id,
-                                                          f"Deleted message from {update.message.from_user.first_name} due to suspected fraud\n"
-                                                          f"Gemini 2.0 Flash (experiment) confidence rate: {confidence_rate}%")
+            message = await update.get_bot().send_message(
+                update.message.chat_id,
+                f"Deleted message from {update.message.from_user.first_name} due to suspected fraud\n"
+                f"Gemini 2.0 Flash (experiment) confidence rate: {confidence_rate}%",
+            )
             context.job_queue.run_once(timed_deleter, 30, data=[message.chat_id, message.message_id])
         except telegram.error.BadRequest:
             log.warning("Failed to delete message")

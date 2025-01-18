@@ -25,17 +25,19 @@ Available methods:
         shuffle a sentence.
 """
 
+import datetime
 import inspect
 import logging
 import random
 import re
-import datetime
-import tgbot_python_v2.util.module
-from tgbot_python_v2.util.help import Help
-from tgbot_python_v2.util.config import Config
-from telegram import Update, Message
-from telegram.ext import ContextTypes, CommandHandler, Application, CallbackContext
+
+from telegram import Message, Update
+from telegram.ext import Application, CallbackContext, CommandHandler, ContextTypes
 from telegram.helpers import escape_markdown
+
+import tgbot_python_v2.util.module
+from tgbot_python_v2.util.config import Config
+from tgbot_python_v2.util.help import Help
 
 log: logging.Logger = logging.getLogger(__name__)
 config: Config = Config("toys.json")
@@ -68,36 +70,41 @@ async def random_percentage(update: Update, context: ContextTypes.DEFAULT_TYPE) 
 
     if update.message.reply_to_message is not None:
         user: str = update.message.reply_to_message.from_user.first_name
-        context: CallbackContext = CallbackContext(context.application,
-                                                   update.message.chat_id,
-                                                   update.message.reply_to_message.from_user.id)
+        context: CallbackContext = CallbackContext(
+            context.application, update.message.chat_id, update.message.reply_to_message.from_user.id
+        )
     else:
         user: str = update.message.from_user.first_name
 
     if type_ == "gay":
-        if 'gei_percent' in context.user_data and datetime.datetime.now(datetime.UTC).date() == context.user_data[
-                                                                                                "gei_number_date"]:
-            rand_percent = context.user_data['gei_percent']
+        if (
+            "gei_percent" in context.user_data
+            and datetime.datetime.now(datetime.UTC).date() == context.user_data["gei_number_date"]
+        ):
+            rand_percent = context.user_data["gei_percent"]
         else:
             rand_percent: int = random.randint(10, 100)
-            context.user_data['gei_percent'] = rand_percent
-            context.user_data['gei_number_date'] = datetime.datetime.now(datetime.UTC).date()
+            context.user_data["gei_percent"] = rand_percent
+            context.user_data["gei_number_date"] = datetime.datetime.now(datetime.UTC).date()
     elif type_ == "sexy":
-        if 'semx_percent' in context.user_data and datetime.datetime.now(datetime.UTC).date() == context.user_data[
-                                                                                                "semx_number_date"]:
-            rand_percent = context.user_data['semx_percent']
+        if (
+            "semx_percent" in context.user_data
+            and datetime.datetime.now(datetime.UTC).date() == context.user_data["semx_number_date"]
+        ):
+            rand_percent = context.user_data["semx_percent"]
         else:
             rand_percent: int = random.randint(-50, 100)
-            context.user_data['semx_percent'] = rand_percent
-            context.user_data['semx_number_date'] = datetime.datetime.now(datetime.UTC).date()
+            context.user_data["semx_percent"] = rand_percent
+            context.user_data["semx_number_date"] = datetime.datetime.now(datetime.UTC).date()
 
     await ret.edit_text(f"Today {user} is {rand_percent}% {type_}")
 
 
 async def about_random_percentage(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("Source code:\n```python\n"
-                                    + escape_markdown(inspect.getsource(random_percentage))
-                                    + "\n```", parse_mode="MarkdownV2")
+    await update.message.reply_text(
+        "Source code:\n```python\n" + escape_markdown(inspect.getsource(random_percentage)) + "\n```",
+        parse_mode="MarkdownV2",
+    )
 
 
 async def shuffle(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -117,16 +124,18 @@ Help.register_help("shuffle", "Shuffle replied message.")
 
 
 def init_insert_words() -> None:
-    default_words: str = "bsdk chutiya bc arch fedora dnf pacman gay lesbian pranaya sharan nero bot cum coom bhai bro " \
-                         "pro max dick big based rui rui2 rui1 samarbot brainfuck inactive dead optimized lines amazing " \
-                         "updated changelog bugs lag adb shell ffs f2fs ext4 ipv6 komaru cute adorable boot rom recovery " \
-                         "docker micro rose miss sir exam pactice allow invite python poothon poopthon nodejs js hello " \
-                         "world development kit lint fuck fucking madarchod behenchod message maybe ping oof available " \
-                         "solution test goes order biggest problem though command root magisk superuser insta facebook " \
-                         "fuckbook twitter ot inr 69 vanilla gapps creampie admin link embed why removed knowing certain " \
-                         "funny bootloader boobloader unlocked uncocked kang kanger sagar java gawd god samar hakimi " \
-                         "mcdonald covid kick ban fart poop pee penis enlarge chup chutiye kek speaking always never los " \
-                         "aex realme oplus vooc dart rebrand rust with vast erofs guilty wrong yeet prath joemomma"
+    default_words: str = (
+        "bsdk chutiya bc arch fedora dnf pacman gay lesbian pranaya sharan nero bot cum coom bhai bro "
+        "pro max dick big based rui rui2 rui1 samarbot brainfuck inactive dead optimized lines amazing "
+        "updated changelog bugs lag adb shell ffs f2fs ext4 ipv6 komaru cute adorable boot rom recovery "
+        "docker micro rose miss sir exam pactice allow invite python poothon poopthon nodejs js hello "
+        "world development kit lint fuck fucking madarchod behenchod message maybe ping oof available "
+        "solution test goes order biggest problem though command root magisk superuser insta facebook "
+        "fuckbook twitter ot inr 69 vanilla gapps creampie admin link embed why removed knowing certain "
+        "funny bootloader boobloader unlocked uncocked kang kanger sagar java gawd god samar hakimi "
+        "mcdonald covid kick ban fart poop pee penis enlarge chup chutiye kek speaking always never los "
+        "aex realme oplus vooc dart rebrand rust with vast erofs guilty wrong yeet prath joemomma"
+    )
     config.config["insert_words"]: list[str] = default_words.split(" ")
     config.write_config()
 
@@ -138,9 +147,9 @@ async def insert(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
     insert_words: list[str] = config.config.get("insert_words")
     input_words: list[str] = update.message.reply_to_message.text.split(" ")
-    random_words: list[str] = random.choices(insert_words,
-                                             k=len(input_words) if len(input_words) <= len(insert_words) else len(
-                                                 insert_words))  # noqa: E501
+    random_words: list[str] = random.choices(
+        insert_words, k=len(input_words) if len(input_words) <= len(insert_words) else len(insert_words)
+    )  # noqa: E501
 
     reply_words: list[str] = random_words + input_words
     random.shuffle(reply_words)

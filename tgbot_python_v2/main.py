@@ -16,14 +16,13 @@
 #
 # Copyright (c) 2024, Firdaus Hakimi <hakimifirdaus944@gmail.com>
 
+import logging
 import os
 import time
-import logging
-import tgbot_python_v2.util.logging
-
 from importlib import import_module
 from pathlib import Path
 
+import tgbot_python_v2.util.logging
 from tgbot_python_v2 import MODULE_DIR
 from tgbot_python_v2.util.module import ModuleMetadata
 
@@ -33,11 +32,11 @@ from telegram import Update
 from telegram.error import TimedOut
 from telegram.ext import (
     ApplicationBuilder,
+    CallbackContext,
+    CallbackQueryHandler,
     CommandHandler,
     MessageHandler,
     filters,
-    CallbackQueryHandler,
-    CallbackContext
 )
 
 try:
@@ -45,8 +44,7 @@ try:
 except ImportError:
     if not (TOKEN := os.getenv("BOT_TOKEN")):
         log.critical("Cannot get bot token.")
-        raise RuntimeError("Cannot get bot token either from api_token "
-                           "file or environment variable.")
+        raise RuntimeError("Cannot get bot token either from api_token " "file or environment variable.")
 Path(".token").write_text(TOKEN)
 
 from tgbot_python_v2.util.help import Help
@@ -61,17 +59,16 @@ import tgbot_python_v2.modules.updater
 # import tgbot_python_v2.modules.moderation       # /ban, /kick, etc
 # import tgbot_python_v2.modules.komaru           # Pranaya's komaru GIFs channel management
 
-app = ApplicationBuilder().token(TOKEN) \
-                          .post_init(tgbot_python_v2.modules.updater.finish_update) \
-                          .build()
+app = ApplicationBuilder().token(TOKEN).post_init(tgbot_python_v2.modules.updater.finish_update).build()
 
 
 async def callback(update: Update, context: CallbackContext) -> None:
     await tgbot_python_v2.modules.updater.confirm_update(update, context)
 
 
-app.add_handler(CallbackQueryHandler(callback, pattern=lambda data: data == f"{modules.updater.name}:confirm_update",
-                                     block=False))
+app.add_handler(
+    CallbackQueryHandler(callback, pattern=lambda data: data == f"{modules.updater.name}:confirm_update", block=False)
+)
 
 # Load modules
 mdls = tuple(Path(f"{MODULE_DIR}/modules").glob("*.py"))
