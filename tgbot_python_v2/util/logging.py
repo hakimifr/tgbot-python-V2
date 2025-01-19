@@ -31,7 +31,6 @@ if GLOBAL_DEBUG:
 # Adapted from https://stackoverflow.com/a/56944256
 #
 class ColouredFormatter(logging.Formatter):
-
     grey = "\x1b[38;20m"
     yellow = "\x1b[33;20m"
     red = "\x1b[31;20m"

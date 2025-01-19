@@ -99,7 +99,8 @@ async def anonfastpurge(update: Update, context: ContextTypes.DEFAULT_TYPE):
     ]
 
     await update.message.reply_text(
-        "Press this button to confirm you're an admin", reply_markup=telegram.InlineKeyboardMarkup(markup)
+        "Press this button to confirm you're an admin",
+        reply_markup=telegram.InlineKeyboardMarkup(markup),
     )
 
     context.application.add_handler(CallbackQueryHandler(anonfastpurge_handler, pattern=callback_data, block=False))
@@ -130,7 +131,10 @@ async def fastpurge(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
     time_taken = await _purge(
-        update.effective_chat.id, update.message.reply_to_message.id, update.message.id, update.get_bot()
+        update.effective_chat.id,
+        update.message.reply_to_message.id,
+        update.message.id,
+        update.get_bot(),
     )
     await message.edit_text(f"Purged {update.message.id - update.message.reply_to_message.id} in {time_taken:.3f}s")
 

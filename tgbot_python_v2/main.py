@@ -44,7 +44,7 @@ try:
 except ImportError:
     if not (TOKEN := os.getenv("BOT_TOKEN")):
         log.critical("Cannot get bot token.")
-        raise RuntimeError("Cannot get bot token either from api_token " "file or environment variable.")
+        raise RuntimeError("Cannot get bot token either from api_token file or environment variable.")
 Path(".token").write_text(TOKEN)
 
 from tgbot_python_v2.util.help import Help
@@ -67,7 +67,11 @@ async def callback(update: Update, context: CallbackContext) -> None:
 
 
 app.add_handler(
-    CallbackQueryHandler(callback, pattern=lambda data: data == f"{modules.updater.name}:confirm_update", block=False)
+    CallbackQueryHandler(
+        callback,
+        pattern=lambda data: data == f"{modules.updater.name}:confirm_update",
+        block=False,
+    )
 )
 
 # Load modules

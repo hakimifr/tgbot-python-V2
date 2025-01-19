@@ -73,7 +73,9 @@ async def finish_update(app: Application) -> None:
 
     try:
         await app.bot.edit_message_text(
-            "Bot restarted", chat_id=config.config["chat_id"], message_id=config.config["message_id"]
+            "Bot restarted",
+            chat_id=config.config["chat_id"],
+            message_id=config.config["message_id"],
         )
     except telegram.error.BadRequest as e:
         log.error("Failed to edit update message, perhaps it's already edited?")

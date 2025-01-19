@@ -71,7 +71,9 @@ async def random_percentage(update: Update, context: ContextTypes.DEFAULT_TYPE) 
     if update.message.reply_to_message is not None:
         user: str = update.message.reply_to_message.from_user.first_name
         context: CallbackContext = CallbackContext(
-            context.application, update.message.chat_id, update.message.reply_to_message.from_user.id
+            context.application,
+            update.message.chat_id,
+            update.message.reply_to_message.from_user.id,
         )
     else:
         user: str = update.message.from_user.first_name
@@ -119,7 +121,10 @@ async def shuffle(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await ret.edit_text(" ".join(text))
 
 
-Help.register_help("about_random_percentage", "Return source code used for generating /gay and /sexy response.")
+Help.register_help(
+    "about_random_percentage",
+    "Return source code used for generating /gay and /sexy response.",
+)
 Help.register_help("shuffle", "Shuffle replied message.")
 
 
@@ -148,7 +153,8 @@ async def insert(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     insert_words: list[str] = config.config.get("insert_words")
     input_words: list[str] = update.message.reply_to_message.text.split(" ")
     random_words: list[str] = random.choices(
-        insert_words, k=len(input_words) if len(input_words) <= len(insert_words) else len(insert_words)
+        insert_words,
+        k=len(input_words) if len(input_words) <= len(insert_words) else len(insert_words),
     )  # noqa: E501
 
     reply_words: list[str] = random_words + input_words

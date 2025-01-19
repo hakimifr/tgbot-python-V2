@@ -33,7 +33,10 @@ log: logging.Logger = logging.getLogger(__name__)
 LOGIN_URL: str = "https://myresults.cie.org.uk/cie-candidate-results/j_spring_security_check"
 RESULTS_URL: str = "https://myresults.cie.org.uk/cie-candidate-results/results"
 
-payload: dict[str, str] = {"j_username": os.getenv("IGCSE_USERNAME", ""), "j_password": os.getenv("IGCSE_PASSWORD", "")}
+payload: dict[str, str] = {
+    "j_username": os.getenv("IGCSE_USERNAME", ""),
+    "j_password": os.getenv("IGCSE_PASSWORD", ""),
+}
 
 
 class MarksParser(HTMLParser):

@@ -21,6 +21,7 @@ Available methods:
     bot_help(update, context):
         Sends help message.
 """
+
 import logging
 
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
@@ -44,7 +45,9 @@ class ModuleMetadata(tgbot_python_v2.util.module.ModuleMetadata):
         app.add_handler(CommandHandler("help", bot_help, block=False))
         app.add_handler(
             CallbackQueryHandler(
-                callback_handler, block=False, pattern=lambda data: data in [f"{__name__}:shrink", f"{__name__}:expand"]
+                callback_handler,
+                block=False,
+                pattern=lambda data: data in [f"{__name__}:shrink", f"{__name__}:expand"],
             )
         )
 
@@ -64,7 +67,8 @@ async def callback_handler(update: Update, context: CallbackContext):
             [[InlineKeyboardButton("Expand help", callback_data=f"{__name__}:expand")]]
         )
         await update.callback_query.edit_message_text(
-            "\n".join(Help.get_help().split("\n")[0:5]) + "\n[..more]", reply_markup=markup
+            "\n".join(Help.get_help().split("\n")[0:5]) + "\n[..more]",
+            reply_markup=markup,
         )
     else:
         raise ValueError(f"'{update.callback_query.data}' was not expected here")
@@ -75,7 +79,10 @@ async def bot_help(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         markup: InlineKeyboardMarkup = InlineKeyboardMarkup(
             [[InlineKeyboardButton("Expand help", callback_data=f"{__name__}:expand")]]
         )
-        await update.message.reply_text("\n".join(Help.get_help().split("\n")[0:5]) + "\n[..more]", reply_markup=markup)
+        await update.message.reply_text(
+            "\n".join(Help.get_help().split("\n")[0:5]) + "\n[..more]",
+            reply_markup=markup,
+        )
     else:
         await update.message.reply_text(Help.get_help())
 

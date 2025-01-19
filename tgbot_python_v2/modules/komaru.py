@@ -61,7 +61,10 @@ if not config.config.get("trigger_chat_whitelist"):
 for key in config_db.config.keys():
     if type(config_db.config[key]) is str:
         log.info(f"Migrating komaru gif '{key}' to new json structure")
-        config_db.config[key] = {"file_id": config_db.config[key], "trigger_keywords": []}
+        config_db.config[key] = {
+            "file_id": config_db.config[key],
+            "trigger_keywords": [],
+        }
 
 
 class ModuleMetadata(tgbot_python_v2.util.module.ModuleMetadata):

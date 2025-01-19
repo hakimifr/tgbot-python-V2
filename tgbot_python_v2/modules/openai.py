@@ -32,7 +32,11 @@ log: logging.Logger = logging.getLogger(__name__)
 API_KEY_OK = True
 RESTRICTED_CHATS_KEY: str = "restricted_chats"
 LIMIT_IN_SEC: int = 75
-COMPLETION_SETTINGS: dict = {"model": "gpt-3.5-turbo", "max_tokens": 2000, "temperature": 0.2}
+COMPLETION_SETTINGS: dict = {
+    "model": "gpt-3.5-turbo",
+    "max_tokens": 2000,
+    "temperature": 0.2,
+}
 
 
 class ModuleMetadata(tgbot_python_v2.util.module.ModuleMetadata):
@@ -71,7 +75,7 @@ async def gpt3(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if timestamp := config.config[RESTRICTED_CHATS_KEY].get(str(update.message.chat_id)):
         if time.time() - timestamp < LIMIT_IN_SEC:
             await update.message.reply_text(
-                "Please wait for a few mins before trying again.\n" f"Currently limit is set to: {LIMIT_IN_SEC}s"
+                f"Please wait for a few mins before trying again.\nCurrently limit is set to: {LIMIT_IN_SEC}s"
             )
             return
 

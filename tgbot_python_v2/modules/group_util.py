@@ -71,14 +71,17 @@ def check_admin(check_reply: bool = True, check_can_promote_member_permission: b
 @check_admin()
 async def ban(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.get_bot().ban_chat_member(
-        update.message.chat_id, update.message.reply_to_message.from_user.id  # type: ignore
+        update.message.chat_id,
+        update.message.reply_to_message.from_user.id,  # type: ignore
     )
 
 
 @check_admin()
 async def unban(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.get_bot().unban_chat_member(
-        update.message.chat_id, update.message.reply_to_message.from_user.id, only_if_banned=True  # type: ignore
+        update.message.chat_id,
+        update.message.reply_to_message.from_user.id,
+        only_if_banned=True,  # type: ignore
     )
 
 
@@ -87,7 +90,8 @@ async def kick(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     # Since unban_chat_member actually ban and then unban the user (unless only_if_banned=True) is given,
     # we can take advantage of that for kicking the user.
     await update.get_bot().unban_chat_member(
-        update.message.chat_id, update.message.reply_to_message.from_user.id  # type: ignore
+        update.message.chat_id,
+        update.message.reply_to_message.from_user.id,  # type: ignore
     )
 
 
@@ -117,9 +121,7 @@ async def promote(
     avail_rights.remove("can_promote_members")
     rights = {right: True for right in avail_rights}
     try:
-        await update.effective_chat.promote_member(
-            update.message.reply_to_message.from_user.id, **rights
-        )  # type: ignore
+        await update.effective_chat.promote_member(update.message.reply_to_message.from_user.id, **rights)  # type: ignore
         await update.message.reply_text(
             f"Promoted!\n"
             f"Note that this command promote with the exact same "
@@ -129,7 +131,7 @@ async def promote(
         )
     except TelegramError as e:
         await update.message.reply_text(
-            f"Uh-oh, that errored out! No clue why that happens." f"Traceback info: \nTelegramError: {e}"
+            f"Uh-oh, that errored out! No clue why that happens.Traceback info: \nTelegramError: {e}"
         )
 
 
@@ -156,9 +158,7 @@ async def demote(
     avail_rights = list(filter(lambda x: getattr(me, x), all_rights))
     rights = {right: False for right in avail_rights}
     try:
-        await update.effective_chat.promote_member(
-            update.message.reply_to_message.from_user.id, **rights
-        )  # type: ignore
+        await update.effective_chat.promote_member(update.message.reply_to_message.from_user.id, **rights)  # type: ignore
     except TelegramError as e:
         await update.message.reply_text(
             f"Uh-oh, that errored out! Most probably because that person was "

@@ -90,7 +90,11 @@ RM6785_DEVELOPMENT_CHAT_ID: int = -1001299514785
 RM6785_CHANNEL_ID: int = -1001384382397
 RM6785_CHAT_ID: int = -1001754321934
 RM6785_UPDATE_STICKER: str = "CAACAgUAAxkBAAED_CFiFIVi0Z1YX3MOK9xnaylscRhWbQACNwIAAt6sOFUrmjW-3D3-2yME"
-RM6785_MASTER_USER: list = [1024853832, 1138003186, 1583181351]  # Hakimi, Samar, Pratham
+RM6785_MASTER_USER: list = [
+    1024853832,
+    1138003186,
+    1583181351,
+]  # Hakimi, Samar, Pratham
 REALME6_GROUP_ID: int = -1001309495065
 REALME6_ADMIN_GROUP_ID: int = -1001596458040
 
@@ -275,10 +279,7 @@ async def report(up: Update, ctx: ContextTypes.DEFAULT_TYPE) -> None:
 
     await up.get_bot().send_message(
         REALME6_ADMIN_GROUP_ID,
-        "!New report!\n"
-        f"Message link: "
-        f"https://t.me/c/{str(REALME6_GROUP_ID).removeprefix('-100')}"
-        f"/{up.message.id}",
+        f"!New report!\nMessage link: https://t.me/c/{str(REALME6_GROUP_ID).removeprefix('-100')}/{up.message.id}",
     )
     await up.message.reply_to_message.forward(REALME6_ADMIN_GROUP_ID)
     await up.message.reply_text("Message forwarded to admin group")

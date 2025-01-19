@@ -51,7 +51,8 @@ class ModuleMetadata(tgbot_python_v2.util.module.ModuleMetadata):
 async def neofetch(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     output: bytes = subprocess.check_output(["bin/neofetch", "--stdout"] + context.args)
     await update.message.reply_text(
-        "```\n" + escape_markdown(output.decode(sys.stdout.encoding)) + "\n```", parse_mode="MarkdownV2"
+        "```\n" + escape_markdown(output.decode(sys.stdout.encoding)) + "\n```",
+        parse_mode="MarkdownV2",
     )
 
 

@@ -61,7 +61,7 @@ async def extract_zip(
         extract_all: bool = False
 
     if file.file_size > FileSizeLimit.FILESIZE_DOWNLOAD:
-        await message.edit_text("Sorry, bot cannot download file larger " f"than {FileSizeLimit.FILESIZE_DOWNLOAD}")
+        await message.edit_text(f"Sorry, bot cannot download file larger than {FileSizeLimit.FILESIZE_DOWNLOAD}")
         tmpfile.close()
         tmpdir.cleanup()
         return
@@ -76,7 +76,8 @@ async def extract_zip(
     zip: ZipFile = ZipFile(zipfile)
     if just_list:
         await message.edit_text(
-            "```python\n" + escape_markdown(pformat(zip.namelist()), version=2) + "\n```", parse_mode="MarkdownV2"
+            "```python\n" + escape_markdown(pformat(zip.namelist()), version=2) + "\n```",
+            parse_mode="MarkdownV2",
         )
         tmpfile.close()
         tmpdir.cleanup()
@@ -102,7 +103,7 @@ async def extract_zip(
 
     for entry in file_to_upload_entry:
         if Path(tmpdir.name).joinpath(entry).stat().st_size > FileSizeLimit.FILESIZE_UPLOAD:
-            log.warning(f"File {file} exceed Telegram upload size " f"limit of {FileSizeLimit.FILESIZE_UPLOAD}")
+            log.warning(f"File {file} exceed Telegram upload size limit of {FileSizeLimit.FILESIZE_UPLOAD}")
             oversized_files.append(entry)
             continue
 
@@ -122,7 +123,7 @@ async def extract_zip(
 
     text: str = "Finished processing.\n"
     if len(oversized_files) > 0:
-        text += "Cannot send the following files because they " "exceed the max size:\n"
+        text += "Cannot send the following files because they exceed the max size:\n"
         for ofile in oversized_files:
             text += f"- {ofile}\n"
 

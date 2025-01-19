@@ -3,8 +3,7 @@ from pathlib import Path
 
 CONTENT: str = """#!/bin/bash
 uv sync  # Make sure dev dependencies are installed
-uv run isort .
-uv run black .
+uv run ruff format
 
 for file in $(git diff --cached --name-only); do
     test -f "$file" && git add "$file"
