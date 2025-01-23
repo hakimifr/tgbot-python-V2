@@ -19,12 +19,14 @@ import os
 import re
 
 import google.generativeai as genai
+from openai import ConflictError
 import telegram
 import telegram.error
 from telegram import Update
-from telegram.ext import Application, ContextTypes, JobQueue, MessageHandler, filters
+from telegram.ext import Application, ContextTypes, JobQueue, MessageHandler, CommandHandler, filters
 
 import tgbot_python_v2.util.module
+from tgbot_python_v2.modules.rm6785 import RM6785_MASTER_USER
 
 log: logging.Logger = logging.getLogger(__name__)
 
@@ -35,37 +37,23 @@ GROUP_WHITELISTS: list[int] = [
     -1001267207006,
     -1001717662621,
 ]  # r6, rm6785, test env, rm6785 photography, abz hub
+confidence_rate_threshold: int = 60
 
 base_prompt = """\
-You are an advanced fraud detection AI, tasked with analyzing user messages to determine if they contain elements of financial, cryptocurrency, or any other type of fraudulent activity.
+You are an advanced fraud detection AI. Analyze user messages (text, emails, or chats) for financial, cryptocurrency, or other fraudulent activity based on these indicators:
 
-Your task is to:
+Financial Fraud: Payment scams, loan/investment schemes, phishing for sensitive info.
+Crypto Fraud: Wallet scams, fraudulent ICOs, pump-and-dump schemes, phishing for private keys.
+Other Fraud: Identity theft, impersonation, pyramid schemes, or scams promising returns.
 
-Input: Take in user-sent messages (can be in the form of text, emails, or chats) as inputs.
+Guidelines:
+Don't gaslight with the confidence rate. If you're not confident, give a lower score. If you are confident, give a higher score.
+If you slightly sure or unsure, give a mid score. Be precise with it. The scores you output will be used by my program to determine
+whether the message should be limited or not, based on my set threshold. That's why it's important.
 
-Analysis: Analyze these messages for signs of fraud based on key indicators such as:
-
-Financial fraud: Suspicious payment requests, loan scams, investment schemes, or phishing attempts for sensitive financial information (e.g., credit card numbers, account details, passwords).
-
-Crypto fraud: Scams involving cryptocurrency wallets, fraudulent ICOs, Ponzi schemes, pump-and-dump schemes, unregulated exchanges, or phishing for private keys.
-
-Other types of fraud: Identity theft, scams involving impersonation, social engineering, pyramid schemes, or any suspicious activity promising returns or seeking personal information.
-
-Accuracy and improvement: Aim to be as accurate as possible by utilizing the latest fraud detection patterns and adapting your analysis to emerging scams. Continuously refine your decision-making process by learning from flagged messages, user feedback, and updated fraud prevention techniques. If a message you received starts with /fban, /ban, /dban, /sban, /warn, then they are admins that are taking actions against spammers. These should not be considered fraud, even if it contains suspicious words as they are the reason field of the bot being used.
-
-Output: Provide a response indicating whether the message likely contains fraudulent activity with:
-
-Fraud detection result: Return "Yes" for suspected fraud and "No" for legitimate or non-suspicious messages.
-
-Confidence level: Provide a confidence percentage (0% to 100%) in your prediction based on the following factors:
-The presence of common fraud patterns (e.g., urgency, threats, promises of high returns, requests for personal/financial information).
-The context and phrasing of the message (e.g., grammatical mistakes, inconsistent language, suspicious links).
-Correlation to known fraud techniques or previously flagged patterns.
-
-Expected format of output (ONLY THE PART IN SQUARE BRACKET SHOULD BE CHANGED, AND OBVIOUSLY REMOVE THE BRACKETS AS WELL):
+Output format (they must be exactly like the following. change only the parts in SQUARE brackets, and remove the SQUARE brackets):
 Fraud detected (Yes/No): [Yes/No]
 Confidence rate: [Percentage]%
-
 
 USER-SENT MESSAGE STARTS BELOW THIS LINE::
 """
@@ -93,6 +81,21 @@ class ModuleMetadata(tgbot_python_v2.util.module.ModuleMetadata):
         model = genai.GenerativeModel(model_name="gemini-2.0-flash-exp", generation_config=generation_config)
 
         app.add_handler(MessageHandler(filters.TEXT, on_message, block=False), group=3)
+        app.add_handler(CommandHandler("getconfidencethreshold", get_confidence_rate_threshold, block=False))
+        app.add_handler(CommandHandler("setconfidencethreshold", set_confidence_rate_threshold, block=False))
+
+
+async def set_confidence_rate_threshold(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    if update.message.from_user.id not in RM6785_MASTER_USER:
+        await update.message.reply_text("Sorry, you're not allowed to do this")
+        return
+
+    global confidence_rate_threshold  # pylint: disable=global-statement
+    confidence_rate_threshold = context.args[0]
+
+
+async def get_confidence_rate_threshold(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    await update.message.reply_text(str(confidence_rate_threshold))
 
 
 async def timed_deleter(context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -136,13 +139,14 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
     log.info(f"fraud?: {fraud_status}")
     log.info(f"confidence rate: {confidence_rate}")
     log.info("")
-    if fraud_status == "Yes" and confidence_rate >= 50:
+    if fraud_status == "Yes" and confidence_rate >= confidence_rate_threshold:
         try:
             await update.message.delete()
             message = await update.get_bot().send_message(
                 update.message.chat_id,
                 f"Deleted message from {update.message.from_user.first_name} due to suspected fraud\n"
-                f"Gemini 2.0 Flash (experiment) confidence rate: {confidence_rate}%",
+                f"Gemini 2.0 Flash (experiment) confidence rate: {confidence_rate}%\n",
+                "This message auto deletes in 30 seconds",
             )
             context.job_queue.run_once(timed_deleter, 30, data=[message.chat_id, message.message_id])
         except telegram.error.BadRequest:
