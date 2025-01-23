@@ -33,7 +33,8 @@ GROUP_WHITELISTS: list[int] = [
     -1001754321934,
     -1001155763792,
     -1001267207006,
-]  # r6, rm6785, test env, rm6785 photography
+    -1001717662621,
+]  # r6, rm6785, test env, rm6785 photography, abz hub
 
 base_prompt = """\
 You are an advanced fraud detection AI, tasked with analyzing user messages to determine if they contain elements of financial, cryptocurrency, or any other type of fraudulent activity.
