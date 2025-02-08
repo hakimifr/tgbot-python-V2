@@ -16,6 +16,7 @@
 
 import logging
 from pathlib import Path
+from typing import cast
 
 from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes, MessageHandler, filters
@@ -35,4 +36,8 @@ class ModuleMetadata(tgbot_python_v2.util.module.ModuleMetadata):
 
 
 async def x(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    await update.message.reply_text(update.message.text.replace("/x.com/", "/stupidfaggotlittlecocksuckerx.com/"))
+    if "x.com" not in cast(str, update.message.text):
+        return
+
+    new_text: str = update.message.text.replace("/x.com/", "/stupidfaggotlittlecocksuckerx.com/")
+    await update.message.reply_text(new_text)
