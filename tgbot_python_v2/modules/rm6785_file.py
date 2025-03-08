@@ -17,12 +17,14 @@
 import logging
 import re
 import string
-from tempfile import NamedTemporaryFile
+from tempfile import NamedTemporaryFile, _TemporaryFileWrapper
 from traceback import format_exception
-from typing import Generator
+from typing import Generator, cast
+from pathlib import Path
 
 import telegram
-from telegram import Update
+from telegram import Document, Update
+from telegram.constants import FileSizeLimit
 from telegram.ext import Application, ContextTypes, MessageHandler, filters
 
 import tgbot_python_v2.util.module as module
@@ -65,30 +67,37 @@ class ModuleMetadata(module.ModuleMetadata):
 
 
 async def expdbreader(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    # we're already using PTB's filters, there's no way update.message.document
+    # will be none, so let's satisfy the type checker
+    update.message.document = cast(Document, update.message.document)
+    update.message.document.file_name = cast(str, update.message.document.file_name)
+
     log.info("Running")
     log.info(f"File name is: {update.message.document.file_name}")
     log.info(f"File size is: {update.message.document.file_size}")
 
-    expdb_tempf: NamedTemporaryFile = NamedTemporaryFile()
-    out_tempf: NamedTemporaryFile = NamedTemporaryFile()
     if not re.match(r"expdb.*", update.message.document.file_name):
         return
     if update.effective_chat.id != RM6785_DEVELOPMENT_CHAT_ID:
         return
 
     # Download the file
-    message = await update.message.reply_text("Found expdb!!")
-    file: telegram.File = await update.message.document.get_file()
-    await file.download_to_drive(custom_path=expdb_tempf.name)
+    with NamedTemporaryFile() as expdb_tempf, NamedTemporaryFile() as out_tempf:
+        message = await update.message.reply_text("Found expdb!!")
+        file: telegram.File = await update.message.document.get_file()
+        await file.download_to_drive(custom_path=expdb_tempf.name)
 
-    result: tuple[bool, Exception | None] = extract_expdb(expdb_tempf.name, out_tempf.name)
-    if result[0]:
+        result: tuple[bool, Exception | None] = extract_expdb(expdb_tempf.name, out_tempf.name)
+
+        if not result[0]:
+            await message.edit_text(f"Failed to trim the expdb dump because: {''.join(format_exception(result[1]))}")
+            return
+
+        if (size := Path(out_tempf.name).stat().st_size) > FileSizeLimit.FILESIZE_UPLOAD:
+            await message.edit_text(
+                f"expdb trimmed successfully, but the size '{size}' exceeds 50MB!\nunable to upload it."
+            )
+            return
+
         await message.edit_text("Successfully trimmed the expdb dump")
         await message.reply_document(out_tempf.name, caption="Trimmed latest dump")
-    else:
-        await message.edit_text(f"Failed to trim the expdb dump because: {''.join(format_exception(result[1]))}")
-
-    expdb_tempf.close()
-    out_tempf.close()
-    assert expdb_tempf.closed
-    assert out_tempf.closed
