@@ -14,11 +14,13 @@
 #
 # Copyright (c) 2024, Firdaus Hakimi <hakimifirdaus944@gmail.com>
 
+import datetime as dt
 import inspect
 import logging
 from calendar import monthrange
 from datetime import datetime
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 from pytz import timezone
 from telegram import Document, Message, Update
@@ -42,6 +44,9 @@ class ModuleMetadata(tgbot_python_v2.util.module.ModuleMetadata):
         app.add_handler(CommandHandler("menu", menu, block=False))
         app.add_handler(CommandHandler("tomorrow", tomorrow, block=False))
         app.add_handler(CommandHandler("rebuilddb", rebuilddb, block=False))
+        app.job_queue.run_daily(
+            daily_trigger, dt.time(hour=0, minute=0, second=1, tzinfo=ZoneInfo("Asia/Kuala_Lumpur"))
+        )
 
 
 def get_datetime() -> datetime:
@@ -88,6 +93,19 @@ async def rebuilddb(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     config.config.clear()
     config.write_config()
     await update.message.reply_text("Cleared database")
+
+
+async def daily_trigger(context: ContextTypes.DEFAULT_TYPE) -> None:
+    day: str = str(get_datetime().day)
+    month: str = str(get_datetime().month)
+    year: str = str(get_datetime().year)
+    caption: str = f"Menu DS untuk {day}/{month}/{year}"
+
+    if config.config.get(day):
+        log.info("recycling existing file id")
+        await context.bot.send_photo(-1001264770246, Document(*config.config.get(day)), caption=caption)  # type: ignore
+    else:
+        await context.bot.send_photo(-1001264770246, f"{MODULE_DIR}/menus/{day}.png", caption=caption)
 
 
 Help.register_help("menu", "Return today's menu")
