@@ -80,7 +80,7 @@ class ModuleMetadata(tgbot_python_v2.util.module.ModuleMetadata):
 
         model = genai.GenerativeModel(model_name="gemini-2.0-flash-exp", generation_config=generation_config)
 
-        app.add_handler(MessageHandler(filters.TEXT, on_message, block=False), group=3)
+        app.add_handler(MessageHandler(filters.TEXT | filters.CAPTION, on_message, block=False), group=3)
         app.add_handler(CommandHandler("getconfidencethreshold", get_confidence_rate_threshold, block=False))
         app.add_handler(CommandHandler("setconfidencethreshold", set_confidence_rate_threshold, block=False))
 
