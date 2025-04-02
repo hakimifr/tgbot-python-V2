@@ -44,9 +44,9 @@ class ModuleMetadata(tgbot_python_v2.util.module.ModuleMetadata):
         app.add_handler(CommandHandler("menu", menu, block=False))
         app.add_handler(CommandHandler("tomorrow", tomorrow, block=False))
         app.add_handler(CommandHandler("rebuilddb", rebuilddb, block=False))
-        app.job_queue.run_daily(
-            daily_trigger, dt.time(hour=0, minute=0, second=1, tzinfo=ZoneInfo("Asia/Kuala_Lumpur"))
-        )
+        # app.job_queue.run_daily(
+        #     daily_trigger, dt.time(hour=0, minute=0, second=1, tzinfo=ZoneInfo("Asia/Kuala_Lumpur"))
+        # )
 
 
 def get_datetime() -> datetime:
