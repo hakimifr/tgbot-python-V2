@@ -19,8 +19,6 @@ import os
 import time
 
 from openai import AsyncOpenAI
-
-aclient = AsyncOpenAI()
 from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes
 
@@ -29,14 +27,10 @@ from tgbot_python_v2.util.config import Config
 from tgbot_python_v2.util.help import Help
 
 log: logging.Logger = logging.getLogger(__name__)
-API_KEY_OK = True
 RESTRICTED_CHATS_KEY: str = "restricted_chats"
 LIMIT_IN_SEC: int = 75
-COMPLETION_SETTINGS: dict = {
-    "model": "gpt-3.5-turbo",
-    "max_tokens": 2000,
-    "temperature": 0.2,
-}
+
+MODEL: str = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
 
 
 class ModuleMetadata(tgbot_python_v2.util.module.ModuleMetadata):
@@ -45,15 +39,18 @@ class ModuleMetadata(tgbot_python_v2.util.module.ModuleMetadata):
         app.add_handler(CommandHandler("gpt3", gpt3, block=False))
 
 
+OPENAI_API_KEY: str | None
 try:
-    from api_token import OPENAI_API_KEY  # type: ignore
+    from api_token import OPENAI_API_KEY as OPENAI_API_KEY  # type: ignore
 except ImportError:
-    if not (OPENAI_API_KEY := os.getenv("OPENAI_API_KEY")):
-        log.error("Cannot get OpenAI api key; module will be disabled.")
-        API_KEY_OK = False
+    OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
+API_KEY_OK: bool = bool(OPENAI_API_KEY)
+if not API_KEY_OK:
+    log.error("Cannot get OpenAI api key; module will be disabled.")
+
+aclient = AsyncOpenAI(api_key=OPENAI_API_KEY)
 config: Config = Config("openai.json")
-aclient.api_key = OPENAI_API_KEY  # type: ignore
 
 if not config.config.get(RESTRICTED_CHATS_KEY):
     config.config[RESTRICTED_CHATS_KEY] = {}
@@ -86,22 +83,17 @@ async def gpt3(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         return
 
     try:
-        aresult = await aclient.chat.completions.create(
-            messages=[
-                {
-                    "role": "user",
-                    "content": f"{' '.join(context.args)}",
-                }
-            ],
-            **COMPLETION_SETTINGS,
+        response = await aclient.responses.create(
+            model=MODEL,
+            input=" ".join(context.args),
         )
     except Exception as e:
         log.error(e)
         await msg.edit_text(f"{e}")
         return
 
-    await msg.edit_text(aresult["choices"][0]["message"]["content"] + f"\n\n---Debug---\n{COMPLETION_SETTINGS}")
+    await msg.edit_text(response.output_text + f"\n\n---Debug---\nmodel={MODEL}")
     config.config[RESTRICTED_CHATS_KEY].update({str(update.message.chat_id): time.time()})
 
 
-Help.register_help("gpt3", "Generate a GPT-3 response")
+Help.register_help("gpt3", "Generate an OpenAI response")
