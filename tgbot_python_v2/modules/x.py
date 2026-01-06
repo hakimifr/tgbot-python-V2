@@ -32,7 +32,8 @@ TOKEN: str = Path(".token").read_text()
 class ModuleMetadata(tgbot_python_v2.util.module.ModuleMetadata):
     @classmethod
     def setup_module(cls, app: Application):
-        app.add_handler(MessageHandler(filters.TEXT, x, block=False), group=10)
+        # app.add_handler(MessageHandler(filters.TEXT, x, block=False), group=10)
+        pass
 
 
 async def x(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
